@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cours et Quiz CM2 - Les Fractions</title>
+  <meta name="description" content="Leçon et quiz interactif sur les fractions, conformes aux attendus du programme de CM2 de l'Éducation nationale française." />
+  <style>
+    :root {
+      --bg1: #eef6ff;
+      --bg2: #ffffff;
+      --card: #ffffff;
+      --text: #1f2a44;
+      --muted: #5f6b85;
+      --accent: #3b82f6;
+      --accent-2: #22c55e;
+      --wrong: #ef4444;
+      --right: #16a34a;
+      --shadow: 0 12px 30px rgba(31, 42, 68, 0.12);
+      --radius: 20px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: linear-gradient(180deg, var(--bg1), var(--bg2));
+      color: var(--text);
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 920px;
+      margin: 0 auto;
+    }
+
+    .hero {
+      background: linear-gradient(135deg, #60a5fa, #34d399);
+      color: white;
+      padding: 24px;
+      border-radius: 28px;
+      box-shadow: var(--shadow);
+      margin-bottom: 20px;
+    }
+
+    .hero h1 {
+      margin: 0 0 8px;
+      font-size: 2rem;
+    }
+
+    .hero p {
+      margin: 0;
+      line-height: 1.5;
+      font-size: 1rem;
+    }
+
+    .badge {
+      display: inline-block;
+      background: rgba(255,255,255,0.22);
+      color: #fff;
+      border-radius: 999px;
+      padding: 4px 12px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      margin-top: 10px;
+    }
+
+    .panel {
+      background: var(--card);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 22px;
+      margin-bottom: 18px;
+    }
+
+    .panel h2 {
+      margin: 0 0 12px;
+      font-size: 1.4rem;
+      color: #1d4ed8;
+    }
+
+    .panel h3 {
+      margin: 18px 0 8px;
+      font-size: 1.1rem;
+      color: #1e3a8a;
+    }
+
+    .panel p, .panel li {
+      line-height: 1.65;
+    }
+
+    .panel ul, .panel ol {
+      padding-left: 22px;
+    }
+
+    .frac {
+      display: inline-flex;
+      flex-direction: column;
+      vertical-align: middle;
+      text-align: center;
+      margin: 0 3px;
+      font-weight: 700;
+      line-height: 1.05;
+    }
+
+    .frac .num {
+      border-bottom: 2px solid currentColor;
+      padding: 0 6px;
+    }
+
+    .frac .den {
+      padding: 0 6px;
+    }
+
+    .example {
+      background: #f0f9ff;
+      border-left: 4px solid #38bdf8;
+      padding: 10px 14px;
+      border-radius: 10px;
+      margin: 10px 0;
+    }
+
+    .tip {
+      background: #fef9c3;
+      border-left: 4px solid #eab308;
+      padding: 10px 14px;
+      border-radius: 10px;
+      margin: 10px 0;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 14px;
+    }
+
+    .pizza {
+      width: 100%;
+      max-width: 220px;
+      margin: 0 auto;
+      display: block;
+    }
+
+    .number-line {
+      width: 100%;
+      max-width: 520px;
+      margin: 10px auto;
+      display: block;
+    }
+
+    .choices {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 12px;
+      margin-top: 14px;
+    }
+
+    button {
+      border: none;
+      border-radius: 16px;
+      padding: 14px 16px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: transform 0.08s ease, opacity 0.2s ease, background 0.2s ease;
+      font-family: inherit;
+    }
+
+    button:hover { transform: translateY(-1px); }
+    button:active { transform: translateY(1px); }
+
+    .answer-btn {
+      background: #f8fafc;
+      color: var(--text);
+      border: 2px solid #e2e8f0;
+      font-weight: 700;
+    }
+
+    .answer-btn.correct {
+      background: #dcfce7;
+      border-color: #4ade80;
+      color: #166534;
+    }
+
+    .answer-btn.wrong {
+      background: #fee2e2;
+      border-color: #f87171;
+      color: #991b1b;
+    }
+
+    .answer-btn:disabled {
+      cursor: not-allowed;
+    }
+
+    .primary {
+      background: var(--accent);
+      color: white;
+      font-weight: 700;
+    }
+
+    .secondary {
+      background: #e2e8f0;
+      color: var(--text);
+      font-weight: 700;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 12px;
+      margin-top: 14px;
+    }
+
+    .stat {
+      background: #f8fafc;
+      border-radius: 18px;
+      padding: 14px;
+      text-align: center;
+      border: 1px solid #e2e8f0;
+    }
+
+    .stat .label {
+      color: var(--muted);
+      font-size: 0.92rem;
+      margin-bottom: 6px;
+    }
+
+    .stat .value {
+      font-size: 1.4rem;
+      font-weight: 800;
+    }
+
+    .question-box {
+      background: #f8fafc;
+      border: 2px dashed #bfdbfe;
+      border-radius: 22px;
+      padding: 24px;
+      text-align: center;
+      margin-top: 12px;
+    }
+
+    .question-type {
+      color: var(--muted);
+      font-size: 0.95rem;
+      margin-bottom: 10px;
+    }
+
+    .question {
+      font-size: clamp(1.2rem, 2.4vw, 1.6rem);
+      font-weight: 800;
+      margin: 0;
+    }
+
+    .feedback {
+      min-height: 32px;
+      font-size: 1.06rem;
+      font-weight: 700;
+      margin-top: 16px;
+      text-align: center;
+    }
+
+    .feedback.right { color: var(--right); }
+    .feedback.wrong { color: var(--wrong); }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 16px;
+      justify-content: center;
+    }
+
+    .progress {
+      width: 100%;
+      background: #e2e8f0;
+      border-radius: 999px;
+      height: 12px;
+      overflow: hidden;
+      margin-top: 12px;
+    }
+
+    .progress > span {
+      display: block;
+      height: 100%;
+      background: linear-gradient(90deg, #60a5fa, #34d399);
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+
+    .small {
+      color: var(--muted);
+      font-size: 0.95rem;
+      text-align: center;
+      margin-top: 8px;
+    }
+
+    .hidden { display: none; }
+
+    .back-button {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      background: rgba(255, 255, 255, 0.9);
+      padding: 10px 20px;
+      border-radius: 20px;
+      text-decoration: none;
+      color: var(--accent);
+      font-weight: 800;
+      font-size: 1.1em;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      transition: all 0.2s;
+      z-index: 100;
+      backdrop-filter: blur(5px);
+    }
+
+    .back-button:hover {
+      transform: scale(1.05);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+    }
+
+    .final-score {
+      font-size: 1.4rem;
+      font-weight: 800;
+      text-align: center;
+      margin: 10px 0;
+    }
+
+    @media (max-width: 640px) {
+      body { padding: 14px; }
+      .hero, .panel { padding: 16px; }
+      .question-box { padding: 18px; }
+      .back-button { position: static; display: inline-block; margin-bottom: 12px; }
+    }
+  </style>
+</head>
+<body>
+  <a href="ecole-cours.html" class="back-button">⬅️ Retour au menu</a>
+
+  <div class="container">
+    <section class="hero">
+      <h1>Les fractions au CM2</h1>
+      <p>Une leçon claire, des exemples et un quiz interactif pour bien comprendre les fractions.</p>
+      <span class="badge">Conforme aux attendus du programme de CM2 — Éducation nationale</span>
+    </section>
+
+    <!-- ====================== COURS ====================== -->
+    <section class="panel">
+      <h2>📘 Le cours</h2>
+
+      <h3>1. Qu'est-ce qu'une fraction ?</h3>
+      <p>
+        Une <strong>fraction</strong> représente une ou plusieurs parts égales d'un tout.
+        Quand on partage une pizza en parts égales, chaque part est une fraction de la pizza entière.
+      </p>
+      <p>
+        Une fraction s'écrit avec deux nombres séparés par un trait : <span class="frac"><span class="num">a</span><span class="den">b</span></span>.
+      </p>
+      <ul>
+        <li>Le nombre <strong>en bas</strong> s'appelle le <strong>dénominateur</strong> : il indique en combien de parts égales le tout est partagé.</li>
+        <li>Le nombre <strong>en haut</strong> s'appelle le <strong>numérateur</strong> : il indique combien de parts on prend.</li>
+      </ul>
+
+      <div class="example">
+        <strong>Exemple :</strong> <span class="frac"><span class="num">3</span><span class="den">4</span></span>
+        se lit « trois quarts ». Le tout est partagé en <strong>4</strong> parts égales et on en prend <strong>3</strong>.
+      </div>
+
+      <div class="grid-2">
+        <div>
+          <p style="text-align:center; font-weight:700;">Trois quarts d'un disque</p>
+          <svg class="pizza" viewBox="0 0 100 100" aria-label="Disque divisé en quatre, trois parts coloriées">
+            <circle cx="50" cy="50" r="45" fill="#f1f5f9" stroke="#1f2a44" stroke-width="2"/>
+            <path d="M50,50 L50,5 A45,45 0 0,1 95,50 Z" fill="#60a5fa"/>
+            <path d="M50,50 L95,50 A45,45 0 0,1 50,95 Z" fill="#60a5fa"/>
+            <path d="M50,50 L50,95 A45,45 0 0,1 5,50 Z" fill="#60a5fa"/>
+            <line x1="50" y1="5" x2="50" y2="95" stroke="#1f2a44" stroke-width="2"/>
+            <line x1="5" y1="50" x2="95" y2="50" stroke="#1f2a44" stroke-width="2"/>
+          </svg>
+        </div>
+        <div>
+          <p style="text-align:center; font-weight:700;">Deux cinquièmes d'un disque</p>
+          <svg class="pizza" viewBox="0 0 100 100" aria-label="Disque divisé en cinq, deux parts coloriées">
+            <circle cx="50" cy="50" r="45" fill="#f1f5f9" stroke="#1f2a44" stroke-width="2"/>
+            <path d="M50,50 L50,5 A45,45 0 0,1 92.8,34.1 Z" fill="#34d399"/>
+            <path d="M50,50 L92.8,34.1 A45,45 0 0,1 77.8,86.8 Z" fill="#34d399"/>
+            <line x1="50" y1="50" x2="50" y2="5" stroke="#1f2a44" stroke-width="2"/>
+            <line x1="50" y1="50" x2="92.8" y2="34.1" stroke="#1f2a44" stroke-width="2"/>
+            <line x1="50" y1="50" x2="77.8" y2="86.8" stroke="#1f2a44" stroke-width="2"/>
+            <line x1="50" y1="50" x2="22.2" y2="86.8" stroke="#1f2a44" stroke-width="2"/>
+            <line x1="50" y1="50" x2="7.2" y2="34.1" stroke="#1f2a44" stroke-width="2"/>
+          </svg>
+        </div>
+      </div>
+
+      <h3>2. Comment lire une fraction ?</h3>
+      <ul>
+        <li><span class="frac"><span class="num">1</span><span class="den">2</span></span> se lit « un demi »</li>
+        <li><span class="frac"><span class="num">1</span><span class="den">3</span></span> se lit « un tiers »</li>
+        <li><span class="frac"><span class="num">1</span><span class="den">4</span></span> se lit « un quart »</li>
+        <li><span class="frac"><span class="num">1</span><span class="den">5</span></span> se lit « un cinquième »</li>
+        <li><span class="frac"><span class="num">1</span><span class="den">10</span></span> se lit « un dixième »</li>
+        <li><span class="frac"><span class="num">1</span><span class="den">100</span></span> se lit « un centième »</li>
+      </ul>
+
+      <h3>3. Les fractions sur une droite graduée</h3>
+      <p>
+        On peut placer une fraction sur une droite graduée. Pour placer
+        <span class="frac"><span class="num">3</span><span class="den">4</span></span>,
+        on partage l'unité en 4 parts égales et on compte 3 parts à partir de 0.
+      </p>
+      <svg class="number-line" viewBox="0 0 520 70" aria-label="Droite graduée avec 0, 1/4, 2/4, 3/4 et 1">
+        <line x1="20" y1="35" x2="500" y2="35" stroke="#1f2a44" stroke-width="2"/>
+        <polygon points="500,35 490,30 490,40" fill="#1f2a44"/>
+        <g font-family="Arial" font-size="14" text-anchor="middle">
+          <line x1="40"  y1="28" x2="40"  y2="42" stroke="#1f2a44" stroke-width="2"/>
+          <line x1="150" y1="28" x2="150" y2="42" stroke="#1f2a44" stroke-width="2"/>
+          <line x1="260" y1="28" x2="260" y2="42" stroke="#1f2a44" stroke-width="2"/>
+          <line x1="370" y1="28" x2="370" y2="42" stroke="#3b82f6" stroke-width="3"/>
+          <line x1="480" y1="28" x2="480" y2="42" stroke="#1f2a44" stroke-width="2"/>
+          <text x="40"  y="60">0</text>
+          <text x="150" y="60">1/4</text>
+          <text x="260" y="60">2/4</text>
+          <text x="370" y="60" fill="#3b82f6" font-weight="700">3/4</text>
+          <text x="480" y="60">1</text>
+        </g>
+      </svg>
+
+      <h3>4. Comparer des fractions</h3>
+      <p>Quand <strong>les dénominateurs sont les mêmes</strong>, la fraction la plus grande est celle qui a le plus grand numérateur.</p>
+      <div class="example">
+        <strong>Exemple :</strong>
+        <span class="frac"><span class="num">2</span><span class="den">7</span></span>
+        &lt;
+        <span class="frac"><span class="num">5</span><span class="den">7</span></span>
+        car 2 &lt; 5.
+      </div>
+      <p>Quand <strong>les numérateurs sont les mêmes</strong>, la fraction la plus grande est celle qui a le plus petit dénominateur (les parts sont plus grosses).</p>
+      <div class="example">
+        <strong>Exemple :</strong>
+        <span class="frac"><span class="num">1</span><span class="den">3</span></span>
+        &gt;
+        <span class="frac"><span class="num">1</span><span class="den">5</span></span>
+        car un tiers est plus grand qu'un cinquième.
+      </div>
+
+      <h3>5. Les fractions égales (équivalentes)</h3>
+      <p>
+        Plusieurs fractions différentes peuvent représenter la même quantité. On dit qu'elles sont <strong>égales</strong> ou <strong>équivalentes</strong>.
+        Pour obtenir une fraction égale, on multiplie (ou on divise) le numérateur et le dénominateur par le même nombre.
+      </p>
+      <div class="example">
+        <strong>Exemples :</strong>
+        <span class="frac"><span class="num">1</span><span class="den">2</span></span> =
+        <span class="frac"><span class="num">2</span><span class="den">4</span></span> =
+        <span class="frac"><span class="num">5</span><span class="den">10</span></span> =
+        <span class="frac"><span class="num">50</span><span class="den">100</span></span>
+      </div>
+
+      <h3>6. Fraction d'un nombre</h3>
+      <p>
+        Pour calculer la fraction d'un nombre, on divise par le dénominateur puis on multiplie par le numérateur.
+      </p>
+      <div class="example">
+        <strong>Exemple :</strong>
+        <span class="frac"><span class="num">3</span><span class="den">4</span></span> de 20 =
+        (20 ÷ 4) × 3 = 5 × 3 = <strong>15</strong>.
+      </div>
+
+      <h3>7. Les fractions décimales</h3>
+      <p>
+        Les fractions <strong>décimales</strong> ont pour dénominateur 10, 100, 1000…
+        Elles permettent d'écrire les nombres décimaux.
+      </p>
+      <ul>
+        <li><span class="frac"><span class="num">1</span><span class="den">10</span></span> = 0,1</li>
+        <li><span class="frac"><span class="num">7</span><span class="den">10</span></span> = 0,7</li>
+        <li><span class="frac"><span class="num">25</span><span class="den">100</span></span> = 0,25</li>
+        <li><span class="frac"><span class="num">3</span><span class="den">100</span></span> = 0,03</li>
+      </ul>
+
+      <h3>8. Fractions supérieures à 1</h3>
+      <p>
+        Quand le numérateur est plus grand que le dénominateur, la fraction est plus grande que 1.
+      </p>
+      <div class="example">
+        <strong>Exemple :</strong>
+        <span class="frac"><span class="num">7</span><span class="den">4</span></span> = 1 +
+        <span class="frac"><span class="num">3</span><span class="den">4</span></span> car 7 = 4 + 3.
+      </div>
+
+      <div class="tip">
+        💡 <strong>À retenir :</strong> une fraction, c'est un partage en parts <strong>égales</strong>. Le dénominateur dit en combien de parts ; le numérateur dit combien on en prend.
+      </div>
+    </section>
+
+    <!-- ====================== QUIZ ====================== -->
+    <section class="panel" id="quizIntro">
+      <h2>🎯 Le quiz</h2>
+      <p>Réponds à 12 questions sur les fractions. Tu as une réponse immédiate après chaque question. Bonne chance !</p>
+      <div class="actions">
+        <button class="primary" id="startBtn">Commencer le quiz</button>
+      </div>
+      <div class="small">Tu pourras recommencer à la fin pour t'entraîner encore.</div>
+    </section>
+
+    <section class="panel hidden" id="quizPanel">
+      <div class="stats">
+        <div class="stat"><div class="label">Question</div><div class="value" id="questionCount">1 / 12</div></div>
+        <div class="stat"><div class="label">Bonnes réponses</div><div class="value" id="score">0</div></div>
+        <div class="stat"><div class="label">Progression</div><div class="value" id="percent">0%</div></div>
+      </div>
+
+      <div class="progress"><span id="progressBar"></span></div>
+
+      <div class="question-box">
+        <div class="question-type" id="questionType">Question</div>
+        <p class="question" id="questionText"></p>
+      </div>
+
+      <div class="choices" id="answers"></div>
+      <div class="feedback" id="feedback"></div>
+
+      <div class="actions">
+        <button class="primary hidden" id="nextBtn">Question suivante</button>
+      </div>
+    </section>
+
+    <section class="panel hidden" id="resultPanel">
+      <h2>🏆 Résultats</h2>
+      <div class="final-score" id="finalScore"></div>
+      <div class="final-score" id="finalMessage"></div>
+      <div class="actions">
+        <button class="primary" id="retryBtn">Recommencer le quiz</button>
+        <button class="secondary" id="reviewBtn">Revoir le cours</button>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    // 12 questions couvrant l'essentiel du programme CM2 sur les fractions.
+    const QUESTIONS = [
+      {
+        type: "Lecture d'une fraction",
+        text: "Comment se lit la fraction 3/4 ?",
+        choices: ["trois quatres", "trois quarts", "quatre tiers", "trois sur le quart"],
+        answer: 1,
+        explain: "3/4 se lit « trois quarts »."
+      },
+      {
+        type: "Numérateur / dénominateur",
+        text: "Dans la fraction 5/8, quel est le dénominateur ?",
+        choices: ["5", "8", "13", "3"],
+        answer: 1,
+        explain: "Le dénominateur est le nombre du bas. Ici, c'est 8."
+      },
+      {
+        type: "Sens d'une fraction",
+        text: "Une tablette de chocolat est partagée en 6 carrés égaux. J'en mange 4. Quelle fraction ai-je mangée ?",
+        choices: ["6/4", "1/4", "4/6", "2/6"],
+        answer: 2,
+        explain: "On prend 4 parts sur 6, soit 4/6."
+      },
+      {
+        type: "Comparaison",
+        text: "Quelle fraction est la plus grande ?",
+        choices: ["3/7", "5/7", "2/7", "1/7"],
+        answer: 1,
+        explain: "Les dénominateurs sont les mêmes : la plus grande est celle qui a le plus grand numérateur, donc 5/7."
+      },
+      {
+        type: "Comparaison",
+        text: "Quelle fraction est la plus grande ?",
+        choices: ["1/2", "1/3", "1/4", "1/10"],
+        answer: 0,
+        explain: "Quand les numérateurs sont identiques, la plus grande est celle qui a le plus petit dénominateur. 1/2 est la plus grande."
+      },
+      {
+        type: "Fractions équivalentes",
+        text: "Quelle fraction est égale à 1/2 ?",
+        choices: ["2/3", "3/5", "4/8", "2/5"],
+        answer: 2,
+        explain: "4/8 = 1/2 (on a multiplié le numérateur et le dénominateur par 4)."
+      },
+      {
+        type: "Fraction d'un nombre",
+        text: "Combien vaut 1/4 de 20 ?",
+        choices: ["4", "5", "10", "16"],
+        answer: 1,
+        explain: "20 ÷ 4 = 5. Donc 1/4 de 20 = 5."
+      },
+      {
+        type: "Fraction d'un nombre",
+        text: "Combien vaut 3/5 de 30 ?",
+        choices: ["6", "12", "18", "25"],
+        answer: 2,
+        explain: "30 ÷ 5 = 6, puis 6 × 3 = 18."
+      },
+      {
+        type: "Fractions décimales",
+        text: "Quelle est l'écriture décimale de 7/10 ?",
+        choices: ["0,07", "0,7", "7,0", "70"],
+        answer: 1,
+        explain: "7/10 = 0,7 (sept dixièmes)."
+      },
+      {
+        type: "Fractions décimales",
+        text: "Quelle fraction décimale est égale à 0,25 ?",
+        choices: ["25/10", "25/100", "2,5/10", "1/25"],
+        answer: 1,
+        explain: "0,25 = 25/100 (vingt-cinq centièmes)."
+      },
+      {
+        type: "Droite graduée",
+        text: "Sur une droite graduée, où se trouve 5/4 ?",
+        choices: ["entre 0 et 1/2", "à 1 exactement", "entre 1 et 2", "à 2 exactement"],
+        answer: 2,
+        explain: "5/4 = 1 + 1/4, donc c'est entre 1 et 2."
+      },
+      {
+        type: "Vocabulaire",
+        text: "Comment appelle-t-on une fraction dont le dénominateur est 10, 100 ou 1000 ?",
+        choices: ["une fraction simple", "une fraction décimale", "une fraction entière", "une fraction inverse"],
+        answer: 1,
+        explain: "On appelle ces fractions des « fractions décimales »."
+      }
+    ];
+
+    const TOTAL = QUESTIONS.length;
+
+    let currentIndex = 0;
+    let score = 0;
+    let locked = false;
+
+    const startBtn = document.getElementById('startBtn');
+    const quizIntro = document.getElementById('quizIntro');
+    const quizPanel = document.getElementById('quizPanel');
+    const resultPanel = document.getElementById('resultPanel');
+    const questionText = document.getElementById('questionText');
+    const questionType = document.getElementById('questionType');
+    const answers = document.getElementById('answers');
+    const feedback = document.getElementById('feedback');
+    const nextBtn = document.getElementById('nextBtn');
+    const scoreEl = document.getElementById('score');
+    const questionCountEl = document.getElementById('questionCount');
+    const percentEl = document.getElementById('percent');
+    const progressBar = document.getElementById('progressBar');
+    const finalScore = document.getElementById('finalScore');
+    const finalMessage = document.getElementById('finalMessage');
+    const retryBtn = document.getElementById('retryBtn');
+    const reviewBtn = document.getElementById('reviewBtn');
+
+    function renderQuestion() {
+      locked = false;
+      feedback.textContent = '';
+      feedback.className = 'feedback';
+      nextBtn.classList.add('hidden');
+
+      const q = QUESTIONS[currentIndex];
+      questionType.textContent = q.type;
+      questionText.textContent = q.text;
+      questionCountEl.textContent = (currentIndex + 1) + ' / ' + TOTAL;
+      scoreEl.textContent = score;
+      const pct = Math.round((currentIndex / TOTAL) * 100);
+      percentEl.textContent = pct + '%';
+      progressBar.style.width = pct + '%';
+
+      answers.innerHTML = '';
+      q.choices.forEach((choice, i) => {
+        const btn = document.createElement('button');
+        btn.className = 'answer-btn';
+        btn.textContent = choice;
+        btn.addEventListener('click', () => checkAnswer(i, btn));
+        answers.appendChild(btn);
+      });
+    }
+
+    function checkAnswer(i, clickedButton) {
+      if (locked) return;
+      locked = true;
+
+      const q = QUESTIONS[currentIndex];
+      const allButtons = [...document.querySelectorAll('.answer-btn')];
+
+      allButtons.forEach((btn, idx) => {
+        btn.disabled = true;
+        if (idx === q.answer) btn.classList.add('correct');
+      });
+
+      if (i === q.answer) {
+        score += 1;
+        scoreEl.textContent = score;
+        clickedButton.classList.add('correct');
+        feedback.textContent = '✅ Bravo ! ' + q.explain;
+        feedback.classList.add('right');
+      } else {
+        clickedButton.classList.add('wrong');
+        feedback.textContent = '❌ Pas tout à fait. ' + q.explain;
+        feedback.classList.add('wrong');
+      }
+
+      nextBtn.classList.remove('hidden');
+      nextBtn.textContent = (currentIndex + 1 === TOTAL) ? 'Voir mes résultats' : 'Question suivante';
+    }
+
+    function nextQuestion() {
+      currentIndex += 1;
+      if (currentIndex >= TOTAL) {
+        showResults();
+      } else {
+        renderQuestion();
+      }
+    }
+
+    function showResults() {
+      quizPanel.classList.add('hidden');
+      resultPanel.classList.remove('hidden');
+      progressBar.style.width = '100%';
+      percentEl.textContent = '100%';
+
+      finalScore.textContent = 'Tu as obtenu ' + score + ' / ' + TOTAL + ' bonnes réponses.';
+
+      let msg = '';
+      const ratio = score / TOTAL;
+      if (ratio === 1) {
+        msg = '🎉 Parfait ! Tu maîtrises les fractions au CM2.';
+      } else if (ratio >= 0.75) {
+        msg = '👏 Très bon score ! Encore quelques révisions et ce sera parfait.';
+      } else if (ratio >= 0.5) {
+        msg = '🙂 C\'est un bon début. Relis le cours et recommence pour progresser.';
+      } else {
+        msg = '💪 Pas de panique : reprends le cours tranquillement, puis recommence le quiz.';
+      }
+      finalMessage.textContent = msg;
+    }
+
+    function restartQuiz() {
+      currentIndex = 0;
+      score = 0;
+      scoreEl.textContent = '0';
+      resultPanel.classList.add('hidden');
+      quizPanel.classList.remove('hidden');
+      renderQuestion();
+    }
+
+    startBtn.addEventListener('click', () => {
+      quizIntro.classList.add('hidden');
+      quizPanel.classList.remove('hidden');
+      renderQuestion();
+    });
+
+    nextBtn.addEventListener('click', nextQuestion);
+    retryBtn.addEventListener('click', restartQuiz);
+    reviewBtn.addEventListener('click', () => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  </script>
+</body>
+</html>
