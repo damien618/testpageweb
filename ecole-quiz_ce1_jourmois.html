@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>J'apprends les jours et les mois - CE1</title>
+
+  <style>
+    :root {
+      --bg: #fff8e7;
+      --card: #ffffff;
+      --text: #24324b;
+      --accent: #ff9f1c;
+      --accent2: #2ec4b6;
+      --good: #2f9e44;
+      --bad: #d9480f;
+      --soft: #f1f7ff;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(#fff8e7, #e8f7ff);
+      color: var(--text);
+      line-height: 1.5;
+    }
+
+    header {
+      background: #ffcc66;
+      padding: 24px 16px;
+      text-align: center;
+      border-bottom: 6px solid #ff9f1c;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 2rem;
+    }
+
+    header p {
+      margin-top: 8px;
+      font-size: 1.1rem;
+    }
+
+    main {
+      max-width: 1000px;
+      margin: auto;
+      padding: 18px;
+    }
+
+    section {
+      background: white;
+      border-radius: 18px;
+      padding: 18px;
+      margin: 18px 0;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+    }
+
+    h2 {
+      color: #0b7285;
+      margin-top: 0;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: 12px;
+    }
+
+    .tile {
+      background: var(--soft);
+      border-radius: 14px;
+      padding: 12px;
+      text-align: center;
+      font-weight: bold;
+      border: 2px solid #d8ecff;
+    }
+
+    .small {
+      display: block;
+      margin-top: 6px;
+      font-size: 0.9rem;
+      font-weight: normal;
+    }
+
+    .memo {
+      background: #fff3bf;
+      border-left: 8px solid var(--accent);
+      padding: 12px;
+      border-radius: 12px;
+      margin-top: 14px;
+      margin-bottom: 20px; /* ✅ espace avec les mois */      
+    }
+
+    .quiz-card {
+      background: #f8f9fa;
+      border-radius: 14px;
+      padding: 14px;
+      margin: 14px 0;
+    }
+
+    button {
+      border: none;
+      border-radius: 12px;
+      padding: 10px 14px;
+      margin: 5px;
+      font-size: 1rem;
+      cursor: pointer;
+      background: var(--accent2);
+      color: white;
+      font-weight: bold;
+    }
+
+    button:hover {
+      transform: scale(1.03);
+    }
+
+    input {
+      padding: 10px;
+      border-radius: 10px;
+      border: 2px solid #ced4da;
+      font-size: 1rem;
+      max-width: 220px;
+    }
+
+    .answer {
+      font-weight: bold;
+      margin-top: 8px;
+      min-height: 24px;
+    }
+
+    .good {
+      color: var(--good);
+    }
+
+    .bad {
+      color: var(--bad);
+    }
+
+    footer {
+      text-align: center;
+      padding: 24px;
+      font-size: 0.9rem;
+    }
+
+    .back-button {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      background: rgba(255, 255, 255, 0.9);
+      padding: 10px 20px;
+      border-radius: 20px;
+      text-decoration: none;
+      color: #0b7285;
+      font-weight: 800;
+      font-size: 1.1em;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      transition: all 0.2s;
+      z-index: 1000;
+      backdrop-filter: blur(5px);
+    }
+
+    @media (max-width: 768px) {
+      .back-button {
+        position: relative;
+        top: 0;
+        left: 0;
+        display: inline-block;
+        margin: 10px;
+      }
+      header {
+        padding-top: 10px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<a href="ecole-cours.html" class="back-button">⬅️ Retour au menu</a>
+
+<header>
+  <h1>🌈 J'apprends les jours et les mois</h1>
+  <p>Niveau CE1 — avec des astuces amusantes et des quiz</p>
+</header>
+
+<main>
+
+  <section>
+    <h2>1. Les jours de la semaine</h2>
+
+    <p>
+      Une semaine a <strong>7 jours</strong>.
+      Les jours reviennent toujours dans le même ordre.
+    </p>
+
+    <div class="grid">
+      <div class="tile">Lundi <span class="small">🚂 début de semaine</span></div>
+      <div class="tile">Mardi <span class="small">on continue</span></div>
+      <div class="tile">Mercredi <span class="small">milieu de semaine</span></div>
+      <div class="tile">Jeudi <span class="small">presque vendredi</span></div>
+      <div class="tile">Vendredi <span class="small">bientôt le week-end</span></div>
+      <div class="tile">Samedi <span class="small">repos 🎉</span></div>
+      <div class="tile">Dimanche <span class="small">jour calme 😴</span></div>
+    </div>
+
+    <div class="memo">
+      <strong>Astuce mémoire :</strong><br>
+      Répète comme une chanson :<br>
+      <em>Lundi, mardi, mercredi, jeudi, vendredi, samedi, dimanche.</em>
+    </div>
+  </section>
+
+  <section>
+    <h2>2. Les mois de l’année</h2>
+
+    <p>
+      Une année a <strong>12 mois</strong>.
+      Elle commence en <strong>janvier</strong> et se termine en <strong>décembre</strong>.
+    </p>
+
+    <div class="memo">
+      <strong>Les 12 mois dans l’ordre :</strong><br>
+      Janvier → Février → Mars → Avril → Mai → Juin → Juillet → Août → Septembre → Octobre → Novembre → Décembre
+    </div>
+
+    <div class="grid">
+      <div class="tile">Janvier <span class="small">souvent froid ❄️</span></div>
+      <div class="tile">Février <span class="small">encore frais 🧣</span></div>
+      <div class="tile">Mars <span class="small">plus de lumière 🌤️</span></div>
+      <div class="tile">Avril <span class="small">pluie et fleurs 🌧️🌸</span></div>
+      <div class="tile">Mai <span class="small">temps doux 🌼</span></div>
+      <div class="tile">Juin <span class="small">jours très longs ☀️</span></div>
+      <div class="tile">Juillet <span class="small">souvent chaud 🏖️</span></div>
+      <div class="tile">Août <span class="small">vacances 😎</span></div>
+      <div class="tile">Septembre <span class="small">rentrée 🎒</span></div>
+      <div class="tile">Octobre <span class="small">feuilles 🍂</span></div>
+      <div class="tile">Novembre <span class="small">jours plus courts 🌙</span></div>
+      <div class="tile">Décembre <span class="small">fin d’année 🎁</span></div>
+    </div>
+
+    <div class="memo">
+      <strong>Astuce des jours longs et courts :</strong><br>
+      Au début de l’année, les journées sont souvent courtes.<br>
+      Vers juin et juillet, les journées sont longues.<br>
+      Vers novembre et décembre, elles redeviennent courtes.
+    </div>
+  </section>
+
+  <section>
+    <h2>3. Quiz sur les jours</h2>
+
+    <div class="quiz-card">
+      <p><strong>Quel jour vient après mardi ?</strong></p>
+
+      <button onclick="check('q1', false)">Lundi</button>
+      <button onclick="check('q1', true)">Mercredi</button>
+      <button onclick="check('q1', false)">Vendredi</button>
+
+      <div id="q1" class="answer"></div>
+    </div>
+
+    <div class="quiz-card">
+      <p><strong>Quel jour vient après vendredi ?</strong></p>
+
+      <button onclick="check('q2', true)">Samedi</button>
+      <button onclick="check('q2', false)">Mardi</button>
+      <button onclick="check('q2', false)">Jeudi</button>
+
+      <div id="q2" class="answer"></div>
+    </div>
+
+  </section>
+
+  <section>
+    <h2>4. Quiz sur les mois</h2>
+
+    <div class="quiz-card">
+      <p><strong>Quel mois vient après avril ?</strong></p>
+
+      <button onclick="check('q3', false)">Mars</button>
+      <button onclick="check('q3', true)">Mai</button>
+      <button onclick="check('q3', false)">Août</button>
+
+      <div id="q3" class="answer"></div>
+    </div>
+
+    <div class="quiz-card">
+      <p id="monthQuestion"><strong>Quel mois vient après septembre ?</strong></p>
+
+      <input id="monthInput" type="text" placeholder="Ta réponse" />
+      <button onclick="checkText()">Vérifier</button>
+      <button onclick="generateRandomMonthQuiz()">Nouveau mois au hasard</button>
+
+      <div id="q4" class="answer"></div>
+    </div>
+
+    <div class="quiz-card">
+      <p><strong>Vers quels mois les journées sont-elles très longues ?</strong></p>
+
+      <button onclick="check('q5', false)">Novembre et décembre</button>
+      <button onclick="check('q5', true)">Juin et juillet</button>
+      <button onclick="check('q5', false)">Janvier et février</button>
+
+      <div id="q5" class="answer"></div>
+    </div>
+
+  </section>
+
+  <section>
+    <h2>5. Défi mémoire</h2>
+
+    <p>Essaie de réciter sans regarder !</p>
+
+    <button onclick="hideDays()">Cacher / montrer les jours</button>
+    <button onclick="hideMonths()">Cacher / montrer les mois</button>
+
+    <div id="daysList" class="memo">
+      Lundi → Mardi → Mercredi → Jeudi → Vendredi → Samedi → Dimanche
+    </div>
+
+    <div id="monthsList" class="memo">
+      Janvier → Février → Mars → Avril → Mai → Juin → Juillet → Août → Septembre → Octobre → Novembre → Décembre
+    </div>
+
+  </section>
+
+</main>
+
+<footer>
+  ⭐ Bravo ! En répétant un peu chaque jour, tu vas tout retenir.
+</footer>
+
+<script>
+
+function check(id, ok) {
+
+  const el = document.getElementById(id);
+
+  if(ok) {
+    el.textContent = "✅ Bravo !";
+    el.className = "answer good";
+  } else {
+    el.textContent = "❌ Essaie encore.";
+    el.className = "answer bad";
+  }
+}
+
+const months = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"];
+let currentTargetMonth = "octobre";
+
+function checkText() {
+
+  const value = document.getElementById("monthInput")
+    .value
+    .trim()
+    .toLowerCase();
+
+  const el = document.getElementById("q4");
+
+  if(value === currentTargetMonth) {
+
+    el.textContent = `✅ Oui ! La réponse était bien ${currentTargetMonth}.`;
+    el.className = "answer good";
+
+  } else {
+
+    el.textContent = `❌ Pas tout à fait. La réponse était ${currentTargetMonth}.`;
+    el.className = "answer bad";
+  }
+}
+
+function generateRandomMonthQuiz() {
+  const randomIndex = Math.floor(Math.random() * months.length);
+  const selectedMonth = months[randomIndex];
+  currentTargetMonth = months[(randomIndex + 1) % 12];
+  
+  document.getElementById("monthQuestion").innerHTML = `<strong>Quel mois vient après ${selectedMonth} ?</strong>`;
+  document.getElementById("monthInput").value = "";
+  const el = document.getElementById("q4");
+  el.textContent = "";
+  el.className = "answer";
+}
+
+function hideDays() {
+
+  const el = document.getElementById("daysList");
+
+  el.style.visibility =
+    el.style.visibility === "hidden"
+    ? "visible"
+    : "hidden";
+}
+
+function hideMonths() {
+
+  const el = document.getElementById("monthsList");
+
+  el.style.visibility =
+    el.style.visibility === "hidden"
+    ? "visible"
+    : "hidden";
+}
+
+</script>
+
+</body>
+</html>

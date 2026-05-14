@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Quiz CM2 - Compléments, Doubles et Moitiés</title>
+  <style>
+    :root {
+      --bg1: #eef6ff;
+      --bg2: #ffffff;
+      --card: #ffffff;
+      --text: #1f2a44;
+      --muted: #5f6b85;
+      --accent: #3b82f6;
+      --accent-2: #22c55e;
+      --wrong: #ef4444;
+      --right: #16a34a;
+      --shadow: 0 12px 30px rgba(31, 42, 68, 0.12);
+      --radius: 20px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: linear-gradient(180deg, var(--bg1), var(--bg2));
+      color: var(--text);
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 920px;
+      margin: 0 auto;
+    }
+
+    .hero {
+      background: linear-gradient(135deg, #60a5fa, #34d399);
+      color: white;
+      padding: 24px;
+      border-radius: 28px;
+      box-shadow: var(--shadow);
+      margin-bottom: 20px;
+    }
+
+    .hero h1 {
+      margin: 0 0 8px;
+      font-size: 2rem;
+    }
+
+    .hero p {
+      margin: 0;
+      line-height: 1.5;
+      font-size: 1rem;
+    }
+
+    .panel {
+      background: var(--card);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 20px;
+      margin-bottom: 18px;
+    }
+
+    .choices {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 12px;
+      margin-top: 14px;
+    }
+
+    button {
+      border: none;
+      border-radius: 16px;
+      padding: 14px 16px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: transform 0.08s ease, opacity 0.2s ease, background 0.2s ease;
+    }
+
+    button:hover { transform: translateY(-1px); }
+    button:active { transform: translateY(1px); }
+
+    .mode-btn {
+      background: #eff6ff;
+      color: #1d4ed8;
+      border: 2px solid #bfdbfe;
+      font-weight: 700;
+    }
+
+    .mode-btn.active {
+      background: #dbeafe;
+      border-color: #60a5fa;
+    }
+
+    .answer-btn {
+      background: #f8fafc;
+      color: var(--text);
+      border: 2px solid #e2e8f0;
+      font-weight: 700;
+    }
+
+    .answer-btn.correct {
+      background: #dcfce7;
+      border-color: #4ade80;
+      color: #166534;
+    }
+
+    .answer-btn.wrong {
+      background: #fee2e2;
+      border-color: #f87171;
+      color: #991b1b;
+    }
+
+    .primary {
+      background: var(--accent);
+      color: white;
+      font-weight: 700;
+    }
+
+    .secondary {
+      background: #e2e8f0;
+      color: var(--text);
+      font-weight: 700;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 12px;
+      margin-top: 14px;
+    }
+
+    .stat {
+      background: #f8fafc;
+      border-radius: 18px;
+      padding: 14px;
+      text-align: center;
+      border: 1px solid #e2e8f0;
+    }
+
+    .stat .label {
+      color: var(--muted);
+      font-size: 0.92rem;
+      margin-bottom: 6px;
+    }
+
+    .stat .value {
+      font-size: 1.4rem;
+      font-weight: 800;
+    }
+
+    .question-box {
+      background: #f8fafc;
+      border: 2px dashed #bfdbfe;
+      border-radius: 22px;
+      padding: 24px;
+      text-align: center;
+      margin-top: 12px;
+    }
+
+    .question-type {
+      color: var(--muted);
+      font-size: 0.95rem;
+      margin-bottom: 10px;
+    }
+
+    .question {
+      font-size: clamp(1.8rem, 3vw, 2.6rem);
+      font-weight: 800;
+      margin: 0;
+    }
+
+    .feedback {
+      min-height: 32px;
+      font-size: 1.06rem;
+      font-weight: 700;
+      margin-top: 16px;
+      text-align: center;
+    }
+
+    .feedback.right { color: var(--right); }
+    .feedback.wrong { color: var(--wrong); }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 16px;
+      justify-content: center;
+    }
+
+    .small {
+      color: var(--muted);
+      font-size: 0.95rem;
+      text-align: center;
+      margin-top: 8px;
+    }
+
+    .hidden { display: none; }
+
+    .back-button {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      background: rgba(255, 255, 255, 0.9);
+      padding: 10px 20px;
+      border-radius: 20px;
+      text-decoration: none;
+      color: var(--accent);
+      font-weight: 800;
+      font-size: 1.1em;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      transition: all 0.2s;
+      z-index: 100;
+      backdrop-filter: blur(5px);
+    }
+
+    .back-button:hover {
+      transform: scale(1.05);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+    }
+
+    @media (max-width: 640px) {
+      body { padding: 14px; }
+      .hero, .panel { padding: 16px; }
+      .question-box { padding: 18px; }
+    }
+  </style>
+</head>
+<body>
+  <a href="ecole-cours.html" class="back-button">⬅️ Retour au menu</a>
+
+  <div class="container">
+    <section class="hero">
+      <h1>Quiz interactif CM2</h1>
+      <p>Révision des compléments à 10, 100, 1000 puis des doubles et des moitiés. Choisis un mode, réponds aux questions, et regarde ton score progresser.</p>
+    </section>
+
+    <section class="panel">
+      <h2>Choisis un exercice</h2>
+      <div class="choices" id="modeChoices">
+        <button class="mode-btn active" data-mode="comp10">Compléments à 10</button>
+        <button class="mode-btn" data-mode="comp100">Compléments à 100</button>
+        <button class="mode-btn" data-mode="comp1000">Compléments à 1000</button>
+        <button class="mode-btn" data-mode="double">Doubles</button>
+        <button class="mode-btn" data-mode="half">Moitiés</button>
+      </div>
+      <div class="actions">
+        <button class="primary" id="startBtn">Commencer</button>
+        <button class="secondary" id="resetBtn">Réinitialiser le score</button>
+      </div>
+      <div class="small">Chaque question propose 4 réponses. Clique sur la bonne.</div>
+    </section>
+
+    <section class="panel hidden" id="quizPanel">
+      <div class="stats">
+        <div class="stat"><div class="label">Question</div><div class="value" id="questionCount">1</div></div>
+        <div class="stat"><div class="label">Bonnes réponses</div><div class="value" id="score">0</div></div>
+        <div class="stat"><div class="label">Série</div><div class="value" id="modeLabel">Compléments à 10</div></div>
+      </div>
+
+      <div class="question-box">
+        <div class="question-type" id="questionType">Complète :</div>
+        <p class="question" id="questionText">7 + ? = 10</p>
+      </div>
+
+      <div class="choices" id="answers"></div>
+      <div class="feedback" id="feedback"></div>
+
+      <div class="actions">
+        <button class="primary hidden" id="nextBtn">Question suivante</button>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    const modeLabels = {
+      comp10: 'Compléments à 10',
+      comp100: 'Compléments à 100',
+      comp1000: 'Compléments à 1000',
+      double: 'Doubles',
+      half: 'Moitiés'
+    };
+
+    let currentMode = 'comp10';
+    let currentQuestion = null;
+    let score = 0;
+    let questionNumber = 0;
+    let locked = false;
+
+    const modeButtons = document.querySelectorAll('.mode-btn');
+    const startBtn = document.getElementById('startBtn');
+    const resetBtn = document.getElementById('resetBtn');
+    const quizPanel = document.getElementById('quizPanel');
+    const questionText = document.getElementById('questionText');
+    const questionType = document.getElementById('questionType');
+    const answers = document.getElementById('answers');
+    const feedback = document.getElementById('feedback');
+    const nextBtn = document.getElementById('nextBtn');
+    const scoreEl = document.getElementById('score');
+    const questionCountEl = document.getElementById('questionCount');
+    const modeLabelEl = document.getElementById('modeLabel');
+
+    function randInt(min, max) {
+      return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    function shuffle(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+      return array;
+    }
+
+    function uniqueChoices(correct, spread = 10) {
+      const set = new Set([correct]);
+      while (set.size < 4) {
+        const delta = randInt(-spread, spread);
+        const candidate = Math.max(0, correct + delta + (delta === 0 ? randInt(1, 3) : 0));
+        set.add(candidate);
+      }
+      return shuffle([...set]);
+    }
+
+    function generateQuestion(mode) {
+      if (mode === 'comp10') {
+        const a = randInt(0, 10);
+        const correct = 10 - a;
+        return {
+          label: 'Complète :',
+          text: `${a} + ? = 10`,
+          correct,
+          choices: uniqueChoices(correct, 4)
+        };
+      }
+
+      if (mode === 'comp100') {
+        const a = randInt(0, 100);
+        const correct = 100 - a;
+        return {
+          label: 'Complète :',
+          text: `${a} + ? = 100`,
+          correct,
+          choices: uniqueChoices(correct, 20)
+        };
+      }
+
+      if (mode === 'comp1000') {
+        const a = randInt(0, 1000);
+        const correct = 1000 - a;
+        return {
+          label: 'Complète :',
+          text: `${a} + ? = 1000`,
+          correct,
+          choices: uniqueChoices(correct, 120)
+        };
+      }
+
+      if (mode === 'double') {
+        const a = randInt(2, 200);
+        const correct = a * 2;
+        return {
+          label: 'Trouve le double de :',
+          text: `${a}`,
+          correct,
+          choices: uniqueChoices(correct, Math.max(8, Math.floor(a / 2)))
+        };
+      }
+
+      const a = randInt(2, 200) * 2;
+      const correct = a / 2;
+      return {
+        label: 'Trouve la moitié de :',
+        text: `${a}`,
+        correct,
+        choices: uniqueChoices(correct, Math.max(8, Math.floor(a / 4)))
+      };
+    }
+
+    function renderQuestion() {
+      locked = false;
+      feedback.textContent = '';
+      feedback.className = 'feedback';
+      nextBtn.classList.add('hidden');
+      currentQuestion = generateQuestion(currentMode);
+      questionNumber += 1;
+
+      questionType.textContent = currentQuestion.label;
+      questionText.textContent = currentQuestion.text;
+      questionCountEl.textContent = questionNumber;
+      scoreEl.textContent = score;
+      modeLabelEl.textContent = modeLabels[currentMode];
+      answers.innerHTML = '';
+
+      currentQuestion.choices.forEach(choice => {
+        const btn = document.createElement('button');
+        btn.className = 'answer-btn';
+        btn.textContent = choice;
+        btn.addEventListener('click', () => checkAnswer(choice, btn));
+        answers.appendChild(btn);
+      });
+    }
+
+    function checkAnswer(choice, clickedButton) {
+      if (locked) return;
+      locked = true;
+
+      const allButtons = [...document.querySelectorAll('.answer-btn')];
+      const correct = currentQuestion.correct;
+
+      allButtons.forEach(btn => {
+        const value = Number(btn.textContent);
+        if (value === correct) btn.classList.add('correct');
+      });
+
+      if (choice === correct) {
+        score += 1;
+        scoreEl.textContent = score;
+        clickedButton.classList.add('correct');
+        feedback.textContent = 'Bravo ! C’est la bonne réponse.';
+        feedback.classList.add('right');
+      } else {
+        clickedButton.classList.add('wrong');
+        feedback.textContent = `Pas tout à fait. La bonne réponse était ${correct}.`;
+        feedback.classList.add('wrong');
+      }
+
+      nextBtn.classList.remove('hidden');
+    }
+
+    modeButtons.forEach(button => {
+      button.addEventListener('click', () => {
+        modeButtons.forEach(b => b.classList.remove('active'));
+        button.classList.add('active');
+        currentMode = button.dataset.mode;
+        modeLabelEl.textContent = modeLabels[currentMode];
+      });
+    });
+
+    startBtn.addEventListener('click', () => {
+      quizPanel.classList.remove('hidden');
+      renderQuestion();
+    });
+
+    nextBtn.addEventListener('click', renderQuestion);
+
+    resetBtn.addEventListener('click', () => {
+      score = 0;
+      questionNumber = 0;
+      scoreEl.textContent = score;
+      questionCountEl.textContent = questionNumber;
+      feedback.textContent = 'Score réinitialisé.';
+      feedback.className = 'feedback';
+      if (!quizPanel.classList.contains('hidden')) {
+        renderQuestion();
+      }
+    });
+  </script>
+</body>
+</html>

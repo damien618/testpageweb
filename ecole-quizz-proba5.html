@@ -1,0 +1,946 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Probabilités 5e</title>
+  <meta name="description" content="Page interactive pour apprendre les probabilités en 5e : échelle de probabilité, événements certains/impossibles, équiprobabilité, calculs simples et quiz." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root, [data-theme="light"] {
+      --text-xs: clamp(0.75rem, 0.7rem + 0.25vw, 0.875rem);
+      --text-sm: clamp(0.875rem, 0.8rem + 0.35vw, 1rem);
+      --text-base: clamp(1rem, 0.95rem + 0.25vw, 1.125rem);
+      --text-lg: clamp(1.125rem, 1rem + 0.75vw, 1.5rem);
+      --text-xl: clamp(1.5rem, 1.2rem + 1.25vw, 2.25rem);
+      --text-2xl: clamp(2rem, 1.2rem + 2.5vw, 3.5rem);
+      --space-1: 0.25rem;
+      --space-2: 0.5rem;
+      --space-3: 0.75rem;
+      --space-4: 1rem;
+      --space-5: 1.25rem;
+      --space-6: 1.5rem;
+      --space-8: 2rem;
+      --space-10: 2.5rem;
+      --space-12: 3rem;
+      --space-16: 4rem;
+      --radius-sm: 0.5rem;
+      --radius-md: 0.8rem;
+      --radius-lg: 1.25rem;
+      --radius-xl: 1.6rem;
+      --radius-full: 999px;
+      --color-bg: #f7fbff;
+      --color-surface: #ffffff;
+      --color-surface-2: #eef6ff;
+      --color-surface-offset: #e4f0ff;
+      --color-border: #c9dbf3;
+      --color-divider: #d8e5f6;
+      --color-text: #15304b;
+      --color-text-muted: #4e6883;
+      --color-text-faint: #7b91a8;
+      --color-text-inverse: #ffffff;
+      --color-primary: #0c7bdc;
+      --color-primary-hover: #0b67b7;
+      --color-primary-highlight: #d5e8fb;
+      --color-success: #2a8d51;
+      --color-warning: #c77711;
+      --color-error: #c44863;
+      --shadow-sm: 0 2px 8px rgba(20, 55, 92, 0.08);
+      --shadow-md: 0 10px 24px rgba(20, 55, 92, 0.12);
+      --shadow-lg: 0 16px 40px rgba(20, 55, 92, 0.16);
+      --transition-interactive: 180ms cubic-bezier(0.16, 1, 0.3, 1);
+      --font-display: 'Baloo 2', 'Trebuchet MS', sans-serif;
+      --font-body: 'Nunito', 'Arial', sans-serif;
+    }
+
+    [data-theme="dark"] {
+      --color-bg: #101722;
+      --color-surface: #162132;
+      --color-surface-2: #1b2b42;
+      --color-surface-offset: #223654;
+      --color-border: #325071;
+      --color-divider: #29415e;
+      --color-text: #edf6ff;
+      --color-text-muted: #bfd0e2;
+      --color-text-faint: #8ea5bb;
+      --color-text-inverse: #0f1823;
+      --color-primary: #5ab0ff;
+      --color-primary-hover: #7dc1ff;
+      --color-primary-highlight: #1f4064;
+      --color-success: #53c57d;
+      --color-warning: #f6b14c;
+      --color-error: #ff7e9d;
+      --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.28);
+      --shadow-md: 0 10px 24px rgba(0, 0, 0, 0.35);
+      --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.42);
+    }
+
+    * , *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      min-height: 100vh;
+      font-family: var(--font-body);
+      font-size: var(--text-base);
+      line-height: 1.6;
+      color: var(--color-text);
+      background:
+        radial-gradient(circle at top left, rgba(90,176,255,0.18), transparent 24%),
+        radial-gradient(circle at bottom right, rgba(42,141,81,0.12), transparent 20%),
+        var(--color-bg);
+    }
+    img, svg { display: block; max-width: 100%; }
+    button, input, select { font: inherit; }
+    button {
+      border: none;
+      cursor: pointer;
+      transition: transform var(--transition-interactive), background var(--transition-interactive), color var(--transition-interactive), box-shadow var(--transition-interactive);
+    }
+    button:hover { transform: translateY(-1px); }
+    a { color: inherit; }
+    :focus-visible {
+      outline: 3px solid var(--color-primary);
+      outline-offset: 3px;
+      border-radius: var(--radius-sm);
+    }
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0,0,0,0);
+      white-space: nowrap;
+      border: 0;
+    }
+    .skip-link {
+      position: absolute;
+      left: var(--space-4);
+      top: -50px;
+      background: var(--color-primary);
+      color: var(--color-text-inverse);
+      padding: var(--space-3) var(--space-4);
+      border-radius: var(--radius-full);
+      z-index: 10;
+    }
+    .skip-link:focus { top: var(--space-4); }
+    .back-button {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      background: rgba(255, 255, 255, 0.9);
+      padding: 10px 20px;
+      border-radius: 20px;
+      text-decoration: none;
+      color: var(--color-primary);
+      font-weight: 800;
+      font-size: 1.1em;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      transition: all 0.2s;
+      z-index: 100;
+      backdrop-filter: blur(5px);
+    }
+    .back-button:hover {
+      transform: scale(1.05);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+    }
+    .container {
+      width: min(1100px, calc(100% - 2rem));
+      margin: 0 auto;
+    }
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      backdrop-filter: blur(12px);
+      background: color-mix(in srgb, var(--color-bg) 85%, transparent);
+      border-bottom: 1px solid var(--color-divider);
+    }
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-4);
+      min-height: 92px;
+      padding: var(--space-5) 0 var(--space-5) clamp(270px, 30vw, 430px);
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      text-decoration: none;
+      font-weight: 800;
+    }
+    .brand-mark {
+      width: 44px;
+      height: 44px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, var(--color-primary), #74c5ff);
+      display: grid;
+      place-items: center;
+      box-shadow: var(--shadow-sm);
+      color: white;
+    }
+    .brand-text {
+      display: flex;
+      flex-direction: column;
+      line-height: 1.1;
+    }
+    .brand-text strong {
+      font-family: var(--font-display);
+      font-size: var(--text-lg);
+    }
+    .brand-text span {
+      font-size: var(--text-xs);
+      color: var(--color-text-muted);
+    }
+    .theme-toggle {
+      min-width: 44px;
+      min-height: 44px;
+      border-radius: var(--radius-full);
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      box-shadow: var(--shadow-sm);
+      color: var(--color-text);
+      display: grid;
+      place-items: center;
+    }
+    main { padding: var(--space-8) 0 var(--space-16); }
+    .hero {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: var(--space-8);
+      align-items: center;
+      padding: var(--space-8) 0 var(--space-10);
+    }
+    .hero-card, .panel, .lesson-card, .quiz-card, .sim-card {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow-md);
+    }
+    .hero-copy h1 {
+      font-family: var(--font-display);
+      font-size: var(--text-2xl);
+      line-height: 1.05;
+      margin-bottom: var(--space-4);
+    }
+    .hero-copy p {
+      color: var(--color-text-muted);
+      max-width: 60ch;
+      margin-bottom: var(--space-6);
+    }
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-2);
+      margin-bottom: var(--space-6);
+    }
+    .chip {
+      padding: 0.45rem 0.85rem;
+      border-radius: var(--radius-full);
+      background: var(--color-primary-highlight);
+      color: var(--color-primary);
+      font-weight: 800;
+      font-size: var(--text-sm);
+    }
+    .cta-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-3);
+    }
+    .btn {
+      min-height: 44px;
+      padding: 0.8rem 1.1rem;
+      border-radius: var(--radius-full);
+      font-weight: 800;
+    }
+    .btn-primary {
+      background: var(--color-primary);
+      color: var(--color-text-inverse);
+      box-shadow: var(--shadow-sm);
+    }
+    .btn-primary:hover { background: var(--color-primary-hover); }
+    .btn-secondary {
+      background: var(--color-surface);
+      color: var(--color-text);
+      border: 1px solid var(--color-border);
+    }
+    .hero-visual {
+      padding: var(--space-6);
+      display: grid;
+      gap: var(--space-4);
+    }
+    .wheel {
+      width: min(320px, 100%);
+      aspect-ratio: 1;
+      margin: 0 auto;
+      border-radius: 50%;
+      background: conic-gradient(
+        #ffcf5b 0 25%,
+        #6fce8e 25% 50%,
+        #6fb8ff 50% 75%,
+        #ff8ea8 75% 100%
+      );
+      border: 10px solid var(--color-surface-2);
+      box-shadow: inset 0 0 0 8px rgba(255,255,255,0.35), var(--shadow-lg);
+      position: relative;
+    }
+    .wheel::after {
+      content: '';
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: var(--color-surface);
+      border: 6px solid var(--color-primary);
+      position: absolute;
+      inset: 0;
+      margin: auto;
+    }
+    .pointer {
+      width: 0;
+      height: 0;
+      border-left: 16px solid transparent;
+      border-right: 16px solid transparent;
+      border-top: 28px solid var(--color-text);
+      margin: 0 auto -10px;
+      z-index: 1;
+    }
+    .fact-strip {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--space-4);
+      margin: var(--space-8) 0;
+    }
+    .fact {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      padding: var(--space-5);
+      box-shadow: var(--shadow-sm);
+    }
+    .fact strong {
+      display: block;
+      font-size: var(--text-xl);
+      font-family: var(--font-display);
+      color: var(--color-primary);
+      margin-bottom: var(--space-2);
+    }
+    section { margin-top: var(--space-12); }
+    .section-title {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: var(--space-4);
+      margin-bottom: var(--space-5);
+    }
+    .section-title h2 {
+      font-family: var(--font-display);
+      font-size: var(--text-xl);
+      line-height: 1.1;
+    }
+    .section-title p {
+      color: var(--color-text-muted);
+      max-width: 55ch;
+    }
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--space-4);
+    }
+    .lesson-card {
+      padding: var(--space-5);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-4);
+      min-height: 100%;
+    }
+    .lesson-card .icon {
+      width: 52px;
+      height: 52px;
+      border-radius: 16px;
+      display: grid;
+      place-items: center;
+      background: var(--color-surface-2);
+      color: var(--color-primary);
+    }
+    .lesson-card h3 {
+      font-size: var(--text-lg);
+      font-weight: 800;
+    }
+    .lesson-card p, .lesson-card li { color: var(--color-text-muted); }
+    .lesson-card ul { padding-left: 1rem; }
+    .scale-wrap {
+      padding: var(--space-6);
+    }
+    .prob-scale {
+      position: relative;
+      height: 18px;
+      border-radius: var(--radius-full);
+      background: linear-gradient(90deg, #ff8ea8, #ffd66b, #83d59e, #5ab0ff);
+      margin: var(--space-8) 0 var(--space-6);
+    }
+    .scale-ticks {
+      display: flex;
+      justify-content: space-between;
+      font-weight: 800;
+      font-size: var(--text-sm);
+      color: var(--color-text-muted);
+    }
+    .marker {
+      position: absolute;
+      top: -14px;
+      transform: translateX(-50%);
+      text-align: center;
+      min-width: 80px;
+    }
+    .marker span {
+      display: inline-block;
+      padding: 0.25rem 0.55rem;
+      border-radius: var(--radius-full);
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      font-size: var(--text-xs);
+      box-shadow: var(--shadow-sm);
+    }
+    .marker::after {
+      content: '';
+      display: block;
+      width: 2px;
+      height: 20px;
+      margin: 0.2rem auto 0;
+      background: var(--color-text);
+      opacity: 0.6;
+    }
+    .interactive-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-5);
+    }
+    .panel, .quiz-card, .sim-card { padding: var(--space-6); }
+    .panel h3, .quiz-card h3, .sim-card h3 {
+      font-size: var(--text-lg);
+      margin-bottom: var(--space-3);
+      font-weight: 800;
+    }
+    .panel p, .quiz-card p, .sim-card p { color: var(--color-text-muted); }
+    .choice-list {
+      display: grid;
+      gap: var(--space-3);
+      margin-top: var(--space-5);
+    }
+    .choice-btn {
+      text-align: left;
+      width: 100%;
+      padding: var(--space-4);
+      border-radius: var(--radius-lg);
+      background: var(--color-surface-2);
+      border: 1px solid var(--color-border);
+      color: var(--color-text);
+      min-height: 52px;
+    }
+    .choice-btn.correct {
+      background: color-mix(in srgb, var(--color-success) 16%, var(--color-surface));
+      border-color: color-mix(in srgb, var(--color-success) 60%, white);
+    }
+    .choice-btn.wrong {
+      background: color-mix(in srgb, var(--color-error) 14%, var(--color-surface));
+      border-color: color-mix(in srgb, var(--color-error) 60%, white);
+    }
+    .feedback {
+      margin-top: var(--space-4);
+      min-height: 52px;
+      padding: var(--space-4);
+      border-radius: var(--radius-lg);
+      background: var(--color-surface-2);
+      border: 1px dashed var(--color-border);
+      font-weight: 700;
+    }
+    .sim-controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-3);
+      margin: var(--space-5) 0;
+    }
+    .pill-value {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 54px;
+      padding: 0.55rem 0.8rem;
+      border-radius: var(--radius-full);
+      background: var(--color-primary-highlight);
+      color: var(--color-primary);
+      font-weight: 800;
+    }
+    .results-bar {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: var(--space-2);
+      margin-top: var(--space-5);
+    }
+    .bar-col {
+      background: var(--color-surface-2);
+      border-radius: var(--radius-lg);
+      padding: var(--space-3);
+      border: 1px solid var(--color-border);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-2);
+      align-items: center;
+      justify-content: end;
+      min-height: 180px;
+    }
+    .bar {
+      width: 100%;
+      border-radius: var(--radius-full);
+      background: linear-gradient(180deg, var(--color-primary), #7fd0ff);
+      min-height: 6px;
+      transition: height 280ms ease;
+    }
+    .bar-label { font-weight: 800; }
+    .bar-count { color: var(--color-text-muted); font-size: var(--text-sm); }
+    .urne {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-3);
+      margin: var(--space-4) 0 var(--space-5);
+      padding: var(--space-4);
+      border-radius: var(--radius-lg);
+      background: var(--color-surface-2);
+      border: 1px dashed var(--color-border);
+    }
+    .ball {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      border: 3px solid rgba(255,255,255,0.75);
+      box-shadow: inset 0 -4px 8px rgba(0,0,0,0.12);
+    }
+    .green { background: #4dbb74; }
+    .yellow { background: #ffcb48; }
+    .purple { background: #b082ff; }
+    .equation {
+      margin-top: var(--space-4);
+      padding: var(--space-4);
+      border-radius: var(--radius-lg);
+      background: var(--color-primary-highlight);
+      font-weight: 800;
+      color: var(--color-text);
+    }
+    .quiz-score {
+      margin-top: var(--space-4);
+      font-weight: 800;
+      color: var(--color-primary);
+    }
+    footer {
+      margin-top: var(--space-16);
+      padding: var(--space-8) 0 var(--space-10);
+      border-top: 1px solid var(--color-divider);
+      color: var(--color-text-muted);
+    }
+    .small-note {
+      font-size: var(--text-sm);
+      color: var(--color-text-faint);
+    }
+    @media (max-width: 900px) {
+      .topbar { padding-left: clamp(190px, 34vw, 250px); }
+      .back-button {
+        top: 14px;
+        left: 12px;
+        padding: 8px 14px;
+        font-size: 0.98em;
+      }
+      .hero, .interactive-grid, .grid-3, .fact-strip { grid-template-columns: 1fr; }
+      .section-title { align-items: start; flex-direction: column; }
+      .results-bar { grid-template-columns: repeat(3, 1fr); }
+    }
+    @media (max-width: 560px) {
+      .topbar { padding-left: 0; }
+      .topbar {
+        min-height: 76px;
+        padding-top: var(--space-4);
+        padding-bottom: var(--space-4);
+      }
+      .back-button {
+        position: fixed;
+        top: 10px;
+        left: 10px;
+        padding: 8px 12px;
+        border-radius: 14px;
+        font-size: 0.92em;
+      }
+      .container { width: min(100% - 1rem, 1100px); }
+      .hero-card, .panel, .lesson-card, .quiz-card, .sim-card { border-radius: var(--radius-lg); }
+      .results-bar { grid-template-columns: repeat(2, 1fr); }
+      .bar-col { min-height: 150px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      * { scroll-behavior: auto !important; transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; }
+    }
+  </style>
+</head>
+<body>
+  <a href="ecole-cours.html" class="back-button">⬅️ Retour au menu</a>
+  <a href="#contenu" class="skip-link">Aller au contenu</a>
+  <header>
+    <div class="container topbar">
+      <a href="#" class="brand" aria-label="Probabilités 5e accueil">
+        <div class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 48 48" width="28" height="28" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="15" cy="15" r="6" fill="currentColor"/>
+            <circle cx="33" cy="15" r="6" fill="currentColor" opacity="0.75"/>
+            <circle cx="24" cy="31" r="6" fill="currentColor" opacity="0.9"/>
+          </svg>
+        </div>
+        <div class="brand-text">
+          <strong>Probabilités 5e</strong>
+          <span>Apprendre avec des expériences aléatoires</span>
+        </div>
+      </a>
+      <button class="theme-toggle" data-theme-toggle aria-label="Passer au mode sombre" title="Changer de thème">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <main id="contenu" class="container">
+    <section class="hero">
+      <div class="hero-copy">
+        <div class="chips" aria-label="Compétences visées">
+          <span class="chip">Événement impossible</span>
+          <span class="chip">Événement certain</span>
+          <span class="chip">Équiprobabilité</span>
+        </div>
+        <h1>Comprendre le hasard, sans paniquer devant les fractions.</h1>
+        <p>Cette page aide un élève de 5e à repérer si un événement est impossible, peu probable, probable ou certain, puis à calculer des probabilités simples avec des dés, des pièces et des urnes.</p>
+        <div class="cta-row">
+          <a class="btn btn-primary" href="#lecon">Commencer la leçon</a>
+          <a class="btn btn-secondary" href="#quiz">Faire le quiz</a>
+        </div>
+      </div>
+      <div class="hero-card hero-visual" aria-label="Illustration sur le hasard">
+        <div class="pointer" aria-hidden="true"></div>
+        <div class="wheel" aria-hidden="true"></div>
+        <p><strong>Idée clé :</strong> une probabilité est un nombre entre <strong>0</strong> et <strong>1</strong>. Plus on se rapproche de 1, plus l’événement a de chances de se produire.</p>
+      </div>
+    </section>
+
+    <div class="fact-strip" aria-label="Rappels essentiels">
+      <article class="fact">
+        <strong>0</strong>
+        <p>Événement impossible : il ne peut pas arriver.</p>
+      </article>
+      <article class="fact">
+        <strong>0,5</strong>
+        <p>Événement autant probable que son contraire, comme pile ou face avec une pièce équilibrée.</p>
+      </article>
+      <article class="fact">
+        <strong>1</strong>
+        <p>Événement certain : il va forcément arriver.</p>
+      </article>
+    </div>
+
+    <section id="lecon">
+      <div class="section-title">
+        <h2>Les idées à retenir</h2>
+        <p>On reste au niveau 5e : des situations simples, où chaque issue a la même chance d’arriver.</p>
+      </div>
+      <div class="grid-3">
+        <article class="lesson-card">
+          <div class="icon" aria-hidden="true">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M4 12h16"/><path d="M12 4v16"/>
+            </svg>
+          </div>
+          <h3>1. Vocabulaire</h3>
+          <ul>
+            <li>Une <strong>expérience aléatoire</strong> a plusieurs résultats possibles.</li>
+            <li>Un <strong>événement</strong> est ce qu’on observe : “obtenir 4” ou “tirer une boule verte”.</li>
+            <li>Si toutes les issues ont la même chance, on parle d’<strong>équiprobabilité</strong>.</li>
+          </ul>
+        </article>
+        <article class="lesson-card">
+          <div class="icon" aria-hidden="true">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M3 17l6-6 4 4 8-8"/>
+            </svg>
+          </div>
+          <h3>2. Échelle de probabilité</h3>
+          <p>La probabilité d’un événement est un nombre entre 0 et 1.</p>
+          <ul>
+            <li>0 : impossible</li>
+            <li>entre 0 et 1 : plus ou moins probable</li>
+            <li>1 : certain</li>
+          </ul>
+        </article>
+        <article class="lesson-card">
+          <div class="icon" aria-hidden="true">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="4" y="4" width="16" height="16" rx="3"/>
+              <circle cx="9" cy="9" r="1.2" fill="currentColor"/>
+              <circle cx="15" cy="15" r="1.2" fill="currentColor"/>
+            </svg>
+          </div>
+          <h3>3. Calcul simple</h3>
+          <p>Quand toutes les issues sont équiprobables :</p>
+          <div class="equation">probabilité = cas favorables ÷ cas possibles</div>
+        </article>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-title">
+        <h2>Échelle de probabilité</h2>
+        <p>Place mentalement chaque événement sur cette frise.</p>
+      </div>
+      <div class="panel scale-wrap">
+        <div class="prob-scale" aria-hidden="true">
+          <div class="marker" style="left:0%;"><span>Impossible</span></div>
+          <div class="marker" style="left:50%;"><span>Pile</span></div>
+          <div class="marker" style="left:83.33%;"><span>≠ 6 au dé</span></div>
+          <div class="marker" style="left:100%;"><span>Certain</span></div>
+        </div>
+        <div class="scale-ticks">
+          <span>0</span>
+          <span>0,25</span>
+          <span>0,5</span>
+          <span>0,75</span>
+          <span>1</span>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-title">
+        <h2>Expériences interactives</h2>
+        <p>Teste, observe, puis compare avec le calcul théorique.</p>
+      </div>
+      <div class="interactive-grid">
+        <article class="sim-card">
+          <h3>Lancer un dé</h3>
+          <p>Observe que, quand on lance beaucoup de fois un dé équilibré, les résultats finissent par se répartir de façon assez proche.</p>
+          <div class="sim-controls">
+            <button class="btn btn-primary" id="rollOnce">Lancer 1 fois</button>
+            <button class="btn btn-secondary" id="rollMany">Lancer 30 fois</button>
+            <button class="btn btn-secondary" id="resetDie">Remettre à zéro</button>
+          </div>
+          <div>Nombre total de lancers : <span class="pill-value" id="totalRolls">0</span></div>
+          <div class="results-bar" id="bars" aria-label="Résultats du dé"></div>
+        </article>
+
+        <article class="sim-card">
+          <h3>Urne de boules</h3>
+          <p>Dans cette urne, il y a 3 boules vertes et 4 boules jaunes. Calcule la probabilité de tirer une boule verte.</p>
+          <div class="urne" aria-label="Boules dans l'urne">
+            <span class="ball green"></span>
+            <span class="ball green"></span>
+            <span class="ball green"></span>
+            <span class="ball yellow"></span>
+            <span class="ball yellow"></span>
+            <span class="ball yellow"></span>
+            <span class="ball yellow"></span>
+          </div>
+          <div class="sim-controls">
+            <button class="btn btn-primary" id="drawBall">Tirer une boule</button>
+            <button class="btn btn-secondary" id="showAnswer">Voir le calcul</button>
+          </div>
+          <div class="feedback" id="drawResult">Clique pour tirer une boule au hasard.</div>
+        </article>
+      </div>
+    </section>
+
+    <section id="quiz">
+      <div class="section-title">
+        <h2>Quiz de 5e</h2>
+        <p>Réponds aux questions et lis l’explication pour progresser.</p>
+      </div>
+      <div class="interactive-grid">
+        <article class="quiz-card" data-question="0">
+          <h3>Question 1</h3>
+          <p>On lance une pièce équilibrée. Quelle est la probabilité d’obtenir pile ?</p>
+          <div class="choice-list">
+            <button class="choice-btn" data-correct="false">0</button>
+            <button class="choice-btn" data-correct="true">0,5</button>
+            <button class="choice-btn" data-correct="false">1</button>
+          </div>
+          <div class="feedback">Choisis une réponse.</div>
+        </article>
+
+        <article class="quiz-card" data-question="1">
+          <h3>Question 2</h3>
+          <p>On lance un dé à 6 faces. Quelle est la probabilité d’obtenir un nombre pair ?</p>
+          <div class="choice-list">
+            <button class="choice-btn" data-correct="false">1/6</button>
+            <button class="choice-btn" data-correct="true">3/6</button>
+            <button class="choice-btn" data-correct="false">5/6</button>
+          </div>
+          <div class="feedback">Compte les nombres pairs possibles : 2, 4 et 6.</div>
+        </article>
+
+        <article class="quiz-card" data-question="2">
+          <h3>Question 3</h3>
+          <p>Dans un sac, il y a 2 billes rouges, 2 billes bleues et 1 bille verte. Quelle est la probabilité d’obtenir une bille verte ?</p>
+          <div class="choice-list">
+            <button class="choice-btn" data-correct="true">1/5</button>
+            <button class="choice-btn" data-correct="false">1/2</button>
+            <button class="choice-btn" data-correct="false">2/5</button>
+          </div>
+          <div class="feedback">Il y a 5 billes en tout, et 1 seule verte.</div>
+        </article>
+
+        <article class="quiz-card" data-question="3">
+          <h3>Question 4</h3>
+          <p>Quel événement est certain ?</p>
+          <div class="choice-list">
+            <button class="choice-btn" data-correct="false">Obtenir 7 avec un dé à 6 faces</button>
+            <button class="choice-btn" data-correct="true">Obtenir un nombre inférieur à 7 avec un dé à 6 faces</button>
+            <button class="choice-btn" data-correct="false">Obtenir 6 deux fois de suite</button>
+          </div>
+          <div class="feedback">Un événement certain a une probabilité égale à 1.</div>
+        </article>
+      </div>
+      <div class="quiz-score" id="quizScore">Score : 0 / 4</div>
+    </section>
+
+    <section>
+      <div class="section-title">
+        <h2>Méthode rapide</h2>
+        <p>Quand tu bloques, suis cette mini-recette.</p>
+      </div>
+      <div class="grid-3">
+        <article class="lesson-card">
+          <h3>Étape 1</h3>
+          <p>Repère toutes les issues possibles.</p>
+        </article>
+        <article class="lesson-card">
+          <h3>Étape 2</h3>
+          <p>Compte les cas favorables à l’événement demandé.</p>
+        </article>
+        <article class="lesson-card">
+          <h3>Étape 3</h3>
+          <p>Fais le quotient : cas favorables ÷ cas possibles.</p>
+        </article>
+      </div>
+    </section>
+
+    <footer>
+      <p>Page conçue pour un apprentissage autonome en 5e, avec un vocabulaire simple et des situations classiques : pièce, dé, roue et urne.</p>
+      <p class="small-note">Astuce : recommence les expériences plusieurs fois pour voir que les fréquences observées se rapprochent peu à peu des probabilités attendues.</p>
+    </footer>
+  </main>
+
+  <script>
+    (() => {
+      const toggle = document.querySelector('[data-theme-toggle]');
+      const root = document.documentElement;
+      let theme = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      root.setAttribute('data-theme', theme);
+      const setIcon = () => {
+        toggle.innerHTML = theme === 'dark'
+          ? '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>'
+          : '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>';
+        toggle.setAttribute('aria-label', theme === 'dark' ? 'Passer au mode clair' : 'Passer au mode sombre');
+      };
+      setIcon();
+      toggle.addEventListener('click', () => {
+        theme = theme === 'dark' ? 'light' : 'dark';
+        root.setAttribute('data-theme', theme);
+        setIcon();
+      });
+    })();
+
+    const counts = [0, 0, 0, 0, 0, 0];
+    const bars = document.getElementById('bars');
+    const totalRolls = document.getElementById('totalRolls');
+
+    function renderBars() {
+      const total = counts.reduce((a, b) => a + b, 0);
+      totalRolls.textContent = total;
+      bars.innerHTML = '';
+      counts.forEach((count, index) => {
+        const col = document.createElement('div');
+        col.className = 'bar-col';
+        const bar = document.createElement('div');
+        bar.className = 'bar';
+        const max = Math.max(...counts, 1);
+        bar.style.height = `${Math.max(8, (count / max) * 110)}px`;
+        const label = document.createElement('div');
+        label.className = 'bar-label';
+        label.textContent = index + 1;
+        const countLabel = document.createElement('div');
+        countLabel.className = 'bar-count';
+        countLabel.textContent = count;
+        col.append(bar, label, countLabel);
+        bars.appendChild(col);
+      });
+    }
+
+    function rollDie(times) {
+      for (let i = 0; i < times; i++) {
+        const result = Math.floor(Math.random() * 6);
+        counts[result] += 1;
+      }
+      renderBars();
+    }
+
+    document.getElementById('rollOnce').addEventListener('click', () => rollDie(1));
+    document.getElementById('rollMany').addEventListener('click', () => rollDie(30));
+    document.getElementById('resetDie').addEventListener('click', () => {
+      counts.fill(0);
+      renderBars();
+    });
+    renderBars();
+
+    const drawResult = document.getElementById('drawResult');
+    const urn = ['verte', 'verte', 'verte', 'jaune', 'jaune', 'jaune', 'jaune'];
+    document.getElementById('drawBall').addEventListener('click', () => {
+      const picked = urn[Math.floor(Math.random() * urn.length)];
+      const color = picked === 'verte' ? 'var(--color-success)' : 'var(--color-warning)';
+      drawResult.innerHTML = `Tu as tiré une boule <strong style="color:${color}">${picked}</strong>.`;
+    });
+    document.getElementById('showAnswer').addEventListener('click', () => {
+      drawResult.innerHTML = 'Il y a 3 boules vertes sur 7 boules en tout, donc la probabilité de tirer une boule verte est <strong>3/7</strong>.';
+    });
+
+    const quizCards = document.querySelectorAll('.quiz-card');
+    const answered = new Map();
+    const quizScore = document.getElementById('quizScore');
+
+    function updateScore() {
+      let score = 0;
+      quizCards.forEach((card, idx) => {
+        if (answered.get(idx) === true) score += 1;
+      });
+      quizScore.textContent = `Score : ${score} / ${quizCards.length}`;
+    }
+
+    quizCards.forEach((card, idx) => {
+      const feedback = card.querySelector('.feedback');
+      const buttons = card.querySelectorAll('.choice-btn');
+      buttons.forEach(btn => {
+        btn.addEventListener('click', () => {
+          buttons.forEach(b => b.disabled = true);
+          const ok = btn.dataset.correct === 'true';
+          answered.set(idx, ok);
+          buttons.forEach(b => {
+            if (b.dataset.correct === 'true') b.classList.add('correct');
+          });
+          if (ok) {
+            btn.classList.add('correct');
+            feedback.innerHTML = 'Bravo ! C’est correct.';
+          } else {
+            btn.classList.add('wrong');
+            feedback.innerHTML = 'Pas tout à fait. Regarde la réponse en vert et relis l’explication.';
+          }
+          updateScore();
+        });
+      });
+    });
+  </script>
+</body>
+</html>

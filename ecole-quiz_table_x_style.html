@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Quiz interactif - Tables de multiplication</title>
+  <style>
+    :root{
+      --bg1:#fff7e6;
+      --bg2:#ffe0f0;
+      --card:#ffffffee;
+      --accent:#ff8a00;
+      --accent2:#7c4dff;
+      --good:#1faa59;
+      --bad:#e53935;
+      --text:#2d2a32;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: "Trebuchet MS", "Comic Sans MS", Arial, sans-serif;
+      color:var(--text);
+      background: linear-gradient(135deg,var(--bg1),var(--bg2));
+      min-height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:20px;
+    }
+    .wrap{
+      width:min(860px, 100%);
+      background:var(--card);
+      backdrop-filter: blur(6px);
+      border-radius:24px;
+      box-shadow:0 16px 40px rgba(0,0,0,.12);
+      overflow:hidden;
+      border:3px solid #fff;
+    }
+    .hero{
+      padding:24px 24px 10px 24px;
+      background:
+        radial-gradient(circle at top right, #fff1 0 20%, transparent 21%),
+        linear-gradient(135deg, #ffb347, #ff6ec7 55%, #8e7dff);
+      color:white;
+    }
+    h1{
+      margin:0 0 8px 0;
+      font-size: clamp(1.6rem, 2vw + 1rem, 2.4rem);
+    }
+    .hero-top{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:16px;
+      flex-wrap:wrap;
+      margin-bottom:8px;
+    }
+    .hero-top h1{
+      margin:0;
+    }
+    .table-picker{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      background:#ffffff24;
+      border:2px solid #ffffff70;
+      border-radius:16px;
+      padding:8px 10px;
+    }
+    .table-picker label{
+      font-weight:700;
+      white-space:nowrap;
+    }
+    .table-picker select{
+      border:none;
+      border-radius:12px;
+      padding:8px 34px 8px 12px;
+      font:inherit;
+      font-weight:700;
+      color:#4d2cc9;
+      background:white;
+      cursor:pointer;
+    }
+    .subtitle{
+      margin:0;
+      opacity:.95;
+      font-size:1rem;
+    }
+    .content{
+      padding:22px;
+    }
+    .panel{
+      background:white;
+      border-radius:18px;
+      padding:20px;
+      border:2px dashed #ffd18a;
+      margin-bottom:18px;
+    }
+    .question{
+      font-size: clamp(1.5rem, 3vw, 2.2rem);
+      text-align:center;
+      font-weight:700;
+      margin-bottom:18px;
+    }
+    .choices{
+      display:grid;
+      grid-template-columns:repeat(auto-fit, minmax(120px,1fr));
+      gap:12px;
+    }
+    button{
+      border:none;
+      border-radius:16px;
+      padding:14px 16px;
+      font-size:1.1rem;
+      font-weight:700;
+      cursor:pointer;
+      transition:transform .08s ease, box-shadow .2s ease, background .2s ease;
+    }
+    button:hover{ transform:translateY(-2px); }
+    button:active{ transform:translateY(0); }
+    .choice{
+      background:#fff5df;
+      box-shadow:0 8px 16px rgba(255,138,0,.12);
+      border:2px solid #ffd08a;
+      color:#5a3b00;
+    }
+    .choice.correct{
+      background:#e6f7ec;
+      border-color:#7dd39f;
+      color:#126c36;
+    }
+    .choice.wrong{
+      background:#fdeaea;
+      border-color:#f29f9f;
+      color:#9f1d1d;
+    }
+    .info{
+      display:flex;
+      flex-wrap:wrap;
+      gap:12px;
+      margin:16px 0;
+    }
+    .badge{
+      background:#f5f2ff;
+      color:#4d2cc9;
+      padding:10px 14px;
+      border-radius:999px;
+      font-weight:700;
+      border:2px solid #ddd2ff;
+    }
+    .feedback{
+      min-height:30px;
+      font-size:1.1rem;
+      font-weight:700;
+      text-align:center;
+      margin-top:14px;
+    }
+    .feedback.good{ color:var(--good); }
+    .feedback.bad{ color:var(--bad); }
+
+    .actions{
+      display:flex;
+      gap:12px;
+      flex-wrap:wrap;
+      justify-content:center;
+      margin-top:16px;
+    }
+    .primary{
+      background:linear-gradient(135deg, var(--accent), #ffb347);
+      color:white;
+      box-shadow:0 8px 18px rgba(255,138,0,.25);
+    }
+    .secondary{
+      background:linear-gradient(135deg, var(--accent2), #a287ff);
+      color:white;
+      box-shadow:0 8px 18px rgba(124,77,255,.22);
+    }
+    .tiny{
+      font-size:.95rem;
+      opacity:.9;
+      text-align:center;
+      margin-top:10px;
+    }
+    .stars{
+      font-size:1.5rem;
+      text-align:center;
+      letter-spacing:6px;
+      margin-bottom:6px;
+    }
+    .footer-note{
+      text-align:center;
+      padding:0 22px 22px;
+      font-size:.95rem;
+      color:#6b6275;
+    }
+    .back-button {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      background: rgba(255, 255, 255, 0.9);
+      padding: 10px 20px;
+      border-radius: 20px;
+      text-decoration: none;
+      color: var(--accent2);
+      font-weight: 800;
+      font-size: 1.1em;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      transition: all 0.2s;
+      z-index: 100;
+      backdrop-filter: blur(5px);
+    }
+    .back-button:hover {
+      transform: scale(1.05);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+    }
+    @media (max-width: 520px){
+      .hero-top{
+        align-items:flex-start;
+      }
+      .table-picker{
+        width:100%;
+        justify-content:space-between;
+      }
+      .table-picker select{
+        min-width:96px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <a href="ecole-cours.html" class="back-button">⬅️ Retour au menu</a>
+
+  <div class="wrap">
+    <div class="hero">
+      <div class="hero-top">
+        <h1>🌟 Quiz interactif — La table de <span id="tableTitle">6</span> 🌟</h1>
+        <div class="table-picker">
+          <label for="tableSelect">Table</label>
+          <select id="tableSelect" aria-label="Choisir une table de multiplication">
+            <option value="1">X1</option>
+            <option value="2">X2</option>
+            <option value="3">X3</option>
+            <option value="4">X4</option>
+            <option value="5">X5</option>
+            <option value="6" selected>X6</option>
+            <option value="7">X7</option>
+            <option value="8">X8</option>
+            <option value="9">X9</option>
+          </select>
+        </div>
+      </div>
+      <p class="subtitle">Clique sur la bonne réponse et essaie d'avoir le meilleur score !</p>
+    </div>
+
+    <div class="content">
+      <div class="panel">
+        <div class="stars" id="stars">⭐ ⭐ ⭐</div>
+        <div class="question" id="question">6 × 1 = ?</div>
+        <div class="choices" id="choices"></div>
+        <div class="feedback" id="feedback"></div>
+      </div>
+
+      <div class="info">
+        <div class="badge">Question : <span id="current">1</span> / <span id="total">10</span></div>
+        <div class="badge">Score : <span id="score">0</span></div>
+        <div class="badge">Série : <span id="streak">0</span> bonne(s)</div>
+      </div>
+
+      <div class="actions">
+        <button class="primary" id="nextBtn" disabled>Question suivante</button>
+        <button class="secondary" id="restartBtn">Recommencer</button>
+      </div>
+
+      <div class="tiny">Astuce : dis la multiplication à voix haute avant de répondre.</div>
+    </div>
+
+    <div class="footer-note">
+      Exercice ludique pour réviser la table de <span id="tableFooter">6</span>.
+    </div>
+  </div>
+
+  <script>
+    let selectedTable = 6;
+    let questions = [];
+    let index = 0;
+    let score = 0;
+    let streak = 0;
+    let locked = false;
+
+    const tableSelect = document.getElementById("tableSelect");
+    const tableTitleEl = document.getElementById("tableTitle");
+    const tableFooterEl = document.getElementById("tableFooter");
+    const questionEl = document.getElementById("question");
+    const choicesEl = document.getElementById("choices");
+    const feedbackEl = document.getElementById("feedback");
+    const currentEl = document.getElementById("current");
+    const totalEl = document.getElementById("total");
+    const scoreEl = document.getElementById("score");
+    const streakEl = document.getElementById("streak");
+    const nextBtn = document.getElementById("nextBtn");
+    const restartBtn = document.getElementById("restartBtn");
+    const starsEl = document.getElementById("stars");
+
+    function shuffle(arr){
+      return [...arr].sort(() => Math.random() - 0.5);
+    }
+
+    function makeChoices(answer){
+      const set = new Set([answer]);
+      while(set.size < 4){
+        const delta = [selectedTable, selectedTable * 2, -selectedTable, -selectedTable * 2, 1, -1, 10, -10][Math.floor(Math.random() * 8)];
+        const value = answer + delta;
+        if(value > 0) set.add(value);
+      }
+      return shuffle([...set]);
+    }
+
+    function makeQuestions(){
+      return Array.from({ length: 10 }, (_, i) => {
+        const multiplier = i + 1;
+        return {
+          q: `${selectedTable} × ${multiplier}`,
+          a: selectedTable * multiplier
+        };
+      });
+    }
+
+    function updateTableLabels(){
+      tableTitleEl.textContent = selectedTable;
+      tableFooterEl.textContent = selectedTable;
+      document.title = `Quiz interactif - Table de ${selectedTable}`;
+    }
+
+    function buildQuiz(){
+      updateTableLabels();
+      questions = shuffle(makeQuestions()).map(item => ({
+        ...item,
+        choices: makeChoices(item.a)
+      }));
+      index = 0;
+      score = 0;
+      streak = 0;
+      locked = false;
+      totalEl.textContent = questions.length;
+      updateStats();
+      renderQuestion();
+    }
+
+    function updateStats(){
+      currentEl.textContent = Math.min(index + 1, questions.length);
+      scoreEl.textContent = score;
+      streakEl.textContent = streak;
+      starsEl.textContent = streak >= 5 ? "🌟 🌟 🌟" : streak >= 3 ? "⭐ 🌟 ⭐" : "⭐ ⭐ ⭐";
+    }
+
+    function renderQuestion(){
+      locked = false;
+      nextBtn.disabled = true;
+      feedbackEl.textContent = "";
+      feedbackEl.className = "feedback";
+
+      if(index >= questions.length){
+        showEnd();
+        return;
+      }
+
+      const item = questions[index];
+      questionEl.textContent = item.q + " = ?";
+      choicesEl.innerHTML = "";
+
+      item.choices.forEach(choice => {
+        const btn = document.createElement("button");
+        btn.className = "choice";
+        btn.textContent = choice;
+        btn.addEventListener("click", () => choose(choice, btn));
+        choicesEl.appendChild(btn);
+      });
+
+      updateStats();
+    }
+
+    function choose(choice, btn){
+      if(locked) return;
+      locked = true;
+      const item = questions[index];
+      const buttons = [...document.querySelectorAll(".choice")];
+
+      buttons.forEach(b => {
+        if(Number(b.textContent) === item.a) b.classList.add("correct");
+      });
+
+      if(choice === item.a){
+        btn.classList.add("correct");
+        score++;
+        streak++;
+        feedbackEl.textContent = "Bravo ! C'est la bonne réponse 🎉";
+        feedbackEl.classList.add("good");
+      } else {
+        btn.classList.add("wrong");
+        streak = 0;
+        feedbackEl.textContent = "Oups ! La bonne réponse était " + item.a + " 🙂";
+        feedbackEl.classList.add("bad");
+      }
+
+      updateStats();
+      nextBtn.disabled = false;
+    }
+
+    function showEnd(){
+      questionEl.textContent = "Quiz terminé !";
+      choicesEl.innerHTML = "";
+      const percent = Math.round((score / questions.length) * 100);
+
+      let message = "Bien joué !";
+      if(percent === 100) message = `Parfait ! Tu connais très bien la table de ${selectedTable} ! 🏆`;
+      else if(percent >= 70) message = "Super travail ! Encore un petit effort et ce sera parfait !";
+      else message = "Courage ! Recommence pour t'entraîner encore un peu.";
+
+      feedbackEl.textContent = `${message} Score final : ${score} / ${questions.length}`;
+      feedbackEl.className = "feedback good";
+      nextBtn.disabled = true;
+    }
+
+    nextBtn.addEventListener("click", () => {
+      index++;
+      renderQuestion();
+    });
+
+    restartBtn.addEventListener("click", buildQuiz);
+
+    tableSelect.addEventListener("change", () => {
+      selectedTable = Number(tableSelect.value);
+      buildQuiz();
+    });
+
+    buildQuiz();
+  </script>
+</body>
+</html>

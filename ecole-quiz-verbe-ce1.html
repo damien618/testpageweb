@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz des Verbes - CE1</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <style>
+        :root {
+            --bg-gradient: linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%);
+            --card-bg: rgba(255, 255, 255, 0.9);
+            --primary: #5b86e5;
+            --secondary: #36d1dc;
+            --text: #2d3436;
+            --success: #00b894;
+            --error: #d63031;
+        }
+
+        body {
+            font-family: 'Nunito', sans-serif;
+            background: var(--bg-gradient);
+            min-height: 100vh;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: var(--text);
+            overflow: hidden;
+        }
+
+        /* Bubbles background */
+        .bubbles {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -1;
+            pointer-events: none;
+        }
+        .bubble {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.4);
+            border-radius: 50%;
+            animation: float 10s infinite ease-in-out alternate;
+        }
+        .bubble:nth-child(1) { width: 80px; height: 80px; left: 10%; top: 20%; animation-duration: 8s; }
+        .bubble:nth-child(2) { width: 120px; height: 120px; left: 80%; top: 10%; animation-duration: 12s; }
+        .bubble:nth-child(3) { width: 50px; height: 50px; left: 50%; top: 70%; animation-duration: 6s; }
+        .bubble:nth-child(4) { width: 150px; height: 150px; left: 20%; top: 80%; animation-duration: 14s; }
+        .bubble:nth-child(5) { width: 90px; height: 90px; left: 70%; top: 60%; animation-duration: 9s; }
+
+        @keyframes float {
+            0% { transform: translateY(0) scale(1); }
+            100% { transform: translateY(-30px) scale(1.05); }
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 30px;
+            padding: 50px 40px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.1);
+            backdrop-filter: blur(10px);
+            width: 90%;
+            max-width: 650px;
+            text-align: center;
+            position: relative;
+            z-index: 10;
+        }
+
+        .title {
+            font-size: 2.8em;
+            font-weight: 900;
+            background: linear-gradient(to right, var(--secondary), var(--primary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-top: 0;
+            margin-bottom: 30px;
+        }
+
+        .progress-pill {
+            display: inline-block;
+            background: #eef2f3;
+            color: #636e72;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 1.1em;
+            margin-bottom: 20px;
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        .hint {
+            font-size: 1.2em;
+            color: #0984e3;
+            margin-bottom: 15px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .phrase {
+            font-size: 1.8em;
+            font-weight: 700;
+            line-height: 1.6;
+            margin: 20px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        input {
+            font-family: 'Nunito', sans-serif;
+            font-size: 1em;
+            font-weight: 700;
+            padding: 5px 15px;
+            border: 3px solid #dfe6e9;
+            border-radius: 15px;
+            width: 130px;
+            text-align: center;
+            outline: none;
+            color: var(--primary);
+            transition: all 0.3s ease;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        input:focus {
+            border-color: var(--secondary);
+            box-shadow: 0 0 15px rgba(54, 209, 220, 0.3);
+            transform: scale(1.05);
+        }
+        
+        input:disabled {
+            background-color: #fff;
+            opacity: 1;
+        }
+
+        button {
+            font-family: 'Nunito', sans-serif;
+            font-size: 1.3em;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--secondary) 0%, var(--primary) 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 20px;
+            cursor: pointer;
+            margin-top: 30px;
+            box-shadow: 0 10px 20px rgba(91, 134, 229, 0.3);
+            transition: all 0.2s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 25px rgba(91, 134, 229, 0.4);
+        }
+
+        button:active {
+            transform: translateY(1px);
+        }
+
+        .feedback-message {
+            min-height: 40px;
+            margin-top: 20px;
+            font-size: 1.3em;
+            font-weight: 900;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .feedback-message.show {
+            opacity: 1;
+        }
+
+        /* Animations */
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20% { transform: translateX(-12px); }
+            40% { transform: translateX(12px); }
+            60% { transform: translateX(-12px); }
+            80% { transform: translateX(12px); }
+        }
+        .shake {
+            animation: shake 0.5s ease-in-out;
+            border-color: var(--error) !important;
+            color: var(--error);
+            background: #fff0f0;
+        }
+        .correct {
+            border-color: var(--success) !important;
+            color: var(--success);
+            background: #f0fff4;
+        }
+        
+        .score-display {
+            font-size: 5em;
+            font-weight: 900;
+            color: var(--primary);
+            margin: 20px 0;
+        }
+        .back-button {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 10px 20px;
+            border-radius: 20px;
+            text-decoration: none;
+            color: var(--primary);
+            font-weight: 800;
+            font-size: 1.1em;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transition: all 0.2s;
+            z-index: 100;
+            backdrop-filter: blur(5px);
+        }
+        .back-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+        }
+    </style>
+</head>
+<body>
+    <a href="ecole-cours.html" class="back-button">⬅️ Retour au menu</a>
+
+    <div class="bubbles">
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+    </div>
+
+    <div class="card" id="app">
+        <!-- Content injected by JS -->
+    </div>
+
+    <script>
+        const verbsData = [
+            // Être
+            { text: "Je ___ un élève de CE1.", hint: "Être", answer: "suis" },
+            { text: "Tu ___ très gentil.", hint: "Être", answer: "es" },
+            { text: "Elle ___ contente aujourd'hui.", hint: "Être", answer: "est" },
+            { text: "Nous ___ dans la cour de récréation.", hint: "Être", answer: "sommes" },
+            { text: "Vous ___ prêts pour le jeu ?", hint: "Être", answer: "êtes" },
+            { text: "Ils ___ en vacances à la mer.", hint: "Être", answer: "sont" },
+
+            // Avoir
+            { text: "J'___ un grand frère.", hint: "Avoir", answer: "ai" },
+            { text: "Tu ___ une belle trousse.", hint: "Avoir", answer: "as" },
+            { text: "Il ___ faim à midi.", hint: "Avoir", answer: "a" },
+            { text: "Nous ___ beaucoup de chance.", hint: "Avoir", answer: "avons" },
+            { text: "Vous ___ un beau vélo rouge.", hint: "Avoir", answer: "avez" },
+            { text: "Elles ___ froid en hiver.", hint: "Avoir", answer: "ont" },
+
+            // Manger
+            { text: "Je ___ une pomme rouge.", hint: "Manger", answer: "mange" },
+            { text: "Tu ___ du pain avec du beurre.", hint: "Manger", answer: "manges" },
+            { text: "On ___ à la cantine.", hint: "Manger", answer: "mange" },
+            { text: "Nous ___ des pâtes ce soir.", hint: "Manger", answer: "mangeons" },
+            { text: "Vous ___ votre dessert.", hint: "Manger", answer: "mangez" },
+            { text: "Ils ___ des frites.", hint: "Manger", answer: "mangent" },
+
+            // Partir
+            { text: "Je ___ à l'école à pied.", hint: "Partir", answer: "pars" },
+            { text: "Tu ___ en voyage bientôt.", hint: "Partir", answer: "pars" },
+            { text: "Le train ___ à l'heure.", hint: "Partir", answer: "part" },
+            { text: "Nous ___ en forêt demain.", hint: "Partir", answer: "partons" },
+            { text: "Vous ___ ce soir ?", hint: "Partir", answer: "partez" },
+            { text: "Elles ___ en courant vite.", hint: "Partir", answer: "partent" }
+        ];
+
+        function shuffleArray(array) {
+            const arr = [...array];
+            for (let i = arr.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [arr[i], arr[j]] = [arr[j], arr[i]];
+            }
+            return arr;
+        }
+
+        let questions = [];
+        let currentIndex = 0;
+        let score = 0;
+        let isWaiting = false;
+
+        function initQuiz() {
+            // Sélectionner 10 questions au hasard parmi toutes celles disponibles
+            questions = shuffleArray(verbsData).slice(0, 10);
+            currentIndex = 0;
+            score = 0;
+            isWaiting = false;
+            renderQuestion();
+        }
+
+        function renderQuestion() {
+            if (currentIndex >= questions.length) {
+                renderEndScreen();
+                return;
+            }
+
+            const q = questions[currentIndex];
+            const app = document.getElementById('app');
+            
+            const phraseHtml = q.text.replace('___', '<input type="text" id="answer" autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" placeholder="...">');
+
+            app.innerHTML = `
+                <h1 class="title">Les Verbes au Présent</h1>
+                <div class="progress-pill">Question ${currentIndex + 1} / ${questions.length}</div>
+                <div class="hint">Verbe : ${q.hint}</div>
+                <div class="phrase">${phraseHtml}</div>
+                <button id="validateBtn" onclick="checkAnswer()">Valider</button>
+                <div id="feedback" class="feedback-message"></div>
+            `;
+
+            const input = document.getElementById('answer');
+            setTimeout(() => input.focus(), 100);
+
+            input.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') checkAnswer();
+            });
+        }
+
+        function checkAnswer() {
+            if (isWaiting) return;
+            
+            const input = document.getElementById('answer');
+            const feedback = document.getElementById('feedback');
+            // Remove extra spaces and make it lower case
+            const userAnswer = input.value.trim().toLowerCase();
+            const correctAnswer = questions[currentIndex].answer;
+
+            if (userAnswer === "") {
+                input.focus();
+                return;
+            }
+
+            isWaiting = true;
+            input.disabled = true;
+
+            if (userAnswer === correctAnswer) {
+                input.classList.remove('shake');
+                input.classList.add('correct');
+                feedback.style.color = 'var(--success)';
+                feedback.innerHTML = "✨ Bravo ! Bonne réponse ! ✨";
+                feedback.classList.add('show');
+                score++;
+                
+                confetti({
+                    particleCount: 150,
+                    spread: 80,
+                    origin: { y: 0.6 },
+                    colors: ['#00b894', '#5b86e5', '#36d1dc', '#fdcb6e']
+                });
+
+                setTimeout(() => {
+                    currentIndex++;
+                    isWaiting = false;
+                    renderQuestion();
+                }, 2000);
+            } else {
+                input.classList.add('shake');
+                feedback.style.color = 'var(--error)';
+                feedback.innerHTML = `Oups ! La réponse était : <strong>${correctAnswer}</strong>`;
+                feedback.classList.add('show');
+
+                setTimeout(() => {
+                    input.classList.remove('shake');
+                    // Remplacer l'input par la bonne réponse en rouge pour mémorisation
+                    input.value = correctAnswer;
+                    input.style.color = 'var(--error)'; 
+                }, 500);
+
+                setTimeout(() => {
+                    currentIndex++;
+                    isWaiting = false;
+                    renderQuestion();
+                }, 3500);
+            }
+        }
+
+        function renderEndScreen() {
+            const app = document.getElementById('app');
+            const total = questions.length;
+            
+            let message = "";
+            let emoji = "";
+            let color = "var(--primary)";
+
+            if (score === total) {
+                message = "Incroyable ! Tu es un champion des verbes !";
+                emoji = "🏆";
+                color = "var(--success)";
+                confetti({ particleCount: 300, spread: 120, origin: { y: 0.4 } });
+            } else if (score >= total * 0.7) {
+                message = "Très bien ! Encore un petit effort et ce sera parfait !";
+                emoji = "🌟";
+            } else if (score >= total * 0.5) {
+                message = "C'est un bon début. Continue à t'entraîner !";
+                emoji = "👍";
+            } else {
+                message = "Ne te décourage pas, la prochaine fois sera la bonne !";
+                emoji = "💪";
+                color = "var(--error)";
+            }
+
+            app.innerHTML = `
+                <h1 class="title">Quiz Terminé !</h1>
+                <div style="font-size: 4em; margin-bottom: 10px;">${emoji}</div>
+                <div class="score-display" style="color: ${color}">${score} / ${total}</div>
+                <div style="font-size: 1.3em; font-weight: 700; margin-bottom: 30px; line-height: 1.5; color: var(--text)">
+                    ${message}
+                </div>
+                <button onclick="initQuiz()">Rejouer une partie</button>
+            `;
+        }
+
+        // Démarrer le jeu au chargement
+        document.addEventListener('DOMContentLoaded', initQuiz);
+    </script>
+</body>
+</html>

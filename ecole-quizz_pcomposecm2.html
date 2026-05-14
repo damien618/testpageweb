@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mission Passé Composé CM2</title>
+
+<style>
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: linear-gradient(135deg, #dff3ff, #fff3c4);
+  color: #222;
+}
+
+main {
+  max-width: 950px;
+  margin: auto;
+  padding: 20px;
+}
+
+h1 {
+  text-align: center;
+  color: #246bfe;
+}
+
+.card {
+  background: white;
+  border-radius: 22px;
+  padding: 24px;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+  margin-top: 20px;
+}
+
+.score {
+  text-align: center;
+  font-size: 22px;
+  font-weight: bold;
+}
+
+.badge {
+  display: inline-block;
+  background: #ff9800;
+  color: white;
+  border-radius: 20px;
+  padding: 8px 15px;
+  margin: 5px;
+  font-weight: bold;
+}
+
+button {
+  font-size: 18px;
+  padding: 15px 20px;
+  margin: 8px;
+  border: none;
+  border-radius: 14px;
+  background: #246bfe;
+  color: white;
+  cursor: pointer;
+  min-width: 180px;
+}
+
+button:hover { background: #174ccc; }
+
+.back-button {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  background: rgba(255, 255, 255, 0.9);
+  padding: 10px 20px;
+  border-radius: 20px;
+  text-decoration: none;
+  color: #246bfe;
+  font-weight: 800;
+  font-size: 1.1em;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  transition: all 0.2s;
+  z-index: 100;
+  backdrop-filter: blur(5px);
+}
+
+.back-button:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+}
+
+input {
+  width: 100%;
+  max-width: 520px;
+  padding: 14px;
+  margin: 8px 0 16px;
+  font-size: 18px;
+  border-radius: 12px;
+  border: 2px solid #ddd;
+}
+
+.grid {
+  display: grid;
+  gap: 14px;
+}
+
+@media (min-width: 700px) {
+  .grid { grid-template-columns: 1fr 1fr; }
+}
+
+.feedback {
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.good { color: green; }
+.bad { color: crimson; }
+
+.hidden { display: none; }
+
+.rule {
+  background: #eef6ff;
+  border-left: 8px solid #246bfe;
+  padding: 15px;
+  border-radius: 12px;
+  margin: 12px 0;
+}
+</style>
+</head>
+
+<body>
+<a href="ecole-cours.html" class="back-button">⬅️ Retour au menu</a>
+<main>
+
+<h1>🚀 Mission Passé Composé CM2</h1>
+
+<div class="score">
+  Score : <span id="score">0</span> / 20 ⭐
+  <br>
+  <span class="badge" id="levelBadge">Niveau 1</span>
+</div>
+
+<section class="card" id="intro">
+  <h2>🎯 Objectif</h2>
+
+  <div class="rule">
+    <strong>Avec avoir :</strong> le participe passé ne s’accorde généralement pas.<br>
+    Exemple : j’ai mangé, elle a vu, nous avons pris.
+  </div>
+
+  <div class="rule">
+    <strong>Avec être :</strong> le participe passé s’accorde avec le sujet.<br>
+    Exemple : il est parti, elle est partie, ils sont partis, elles sont parties.
+  </div>
+
+  <div class="rule">
+    ⭐ Verbes essentiels :<br>
+    <strong>être → j’ai été</strong><br>
+    <strong>avoir → j’ai eu</strong>
+  </div>
+
+  <button onclick="start()">Commencer</button>
+</section>
+
+<section class="card hidden" id="game">
+  <h2 id="title"></h2>
+  <p id="instruction"></p>
+
+  <div id="exercise"></div>
+
+  <p class="feedback" id="feedback"></p>
+</section>
+
+</main>
+
+<script>
+const MAX_SCORE = 20;
+
+const verbs = [
+  { infinitive: "être", aux: "avoir", pp: "été", level: 1 },
+  { infinitive: "avoir", aux: "avoir", pp: "eu", level: 1 },
+  { infinitive: "manger", aux: "avoir", pp: "mangé", level: 1 },
+  { infinitive: "jouer", aux: "avoir", pp: "joué", level: 1 },
+
+  { infinitive: "finir", aux: "avoir", pp: "fini", level: 2 },
+  { infinitive: "choisir", aux: "avoir", pp: "choisi", level: 2 },
+  { infinitive: "prendre", aux: "avoir", pp: "pris", level: 2 },
+  { infinitive: "voir", aux: "avoir", pp: "vu", level: 2 },
+  { infinitive: "faire", aux: "avoir", pp: "fait", level: 2 },
+
+  { infinitive: "aller", aux: "être", pp: "allé", level: 3 },
+  { infinitive: "venir", aux: "être", pp: "venu", level: 3 },
+  { infinitive: "partir", aux: "être", pp: "parti", level: 3 },
+  { infinitive: "arriver", aux: "être", pp: "arrivé", level: 3 },
+  { infinitive: "tomber", aux: "être", pp: "tombé", level: 3 },
+  { infinitive: "naître", aux: "être", pp: "né", level: 3 }
+];
+
+const pronouns = [
+  { text: "je", auxA: "ai", auxE: "suis", gender: "both", plural: false },
+  { text: "tu", auxA: "as", auxE: "es", gender: "both", plural: false },
+  { text: "il", auxA: "a", auxE: "est", gender: "m", plural: false },
+  { text: "elle", auxA: "a", auxE: "est", gender: "f", plural: false },
+  { text: "nous", auxA: "avons", auxE: "sommes", gender: "both", plural: true },
+  { text: "vous", auxA: "avez", auxE: "êtes", gender: "both", plural: true },
+  { text: "ils", auxA: "ont", auxE: "sont", gender: "m", plural: true },
+  { text: "elles", auxA: "ont", auxE: "sont", gender: "f", plural: true }
+];
+
+let score = 0;
+let currentVerb;
+let currentMode;
+let currentPronoun;
+
+let errors = {
+  auxiliaire: 0,
+  accord: 0,
+  autre: 0
+};
+
+function start() {
+  document.getElementById("intro").classList.add("hidden");
+  document.getElementById("game").classList.remove("hidden");
+  nextExercise();
+}
+
+function getLevel() {
+  if (score < 7) return 1;
+  if (score < 14) return 2;
+  return 3;
+}
+
+function updateLevelBadge() {
+  const level = getLevel();
+  const names = {
+    1: "Niveau 1 : être, avoir, verbes simples",
+    2: "Niveau 2 : verbes du 2e et 3e groupe",
+    3: "Niveau 3 : accords avec être"
+  };
+  document.getElementById("levelBadge").textContent = names[level];
+}
+
+function normalize(text) {
+  return text
+    .toLowerCase()
+    .trim()
+    .replaceAll("’", "'")
+    .replaceAll("`", "'")
+    .replace(/\s+/g, " ")
+    .replace(/^j ai /, "j'ai ")
+    .replace(/^j' /, "j'");
+}
+
+function pickVerb() {
+  const level = getLevel();
+  let pool = verbs.filter(v => v.level <= level);
+
+  pool.push(verbs[0], verbs[0], verbs[1], verbs[1]);
+
+  if (level === 3) {
+    pool = pool.concat(verbs.filter(v => v.aux === "être"));
+  }
+
+  return pool[Math.floor(Math.random() * pool.length)];
+}
+
+function accordPP(pp, pronoun, aux) {
+  if (aux !== "être") return pp;
+
+  let result = pp;
+  if (pronoun.gender === "f") result += "e";
+  if (pronoun.plural) result += "s";
+
+  return result;
+}
+
+function buildAnswer(verb, pronoun) {
+  const aux = verb.aux === "avoir" ? pronoun.auxA : pronoun.auxE;
+  const pp = accordPP(verb.pp, pronoun, verb.aux);
+
+  if (pronoun.text === "je" && /^[aeiouéèê]/.test(aux)) {
+    return `j'${aux} ${pp}`;
+  }
+
+  return `${pronoun.text} ${aux} ${pp}`;
+}
+
+function acceptedAnswers(verb, pronoun) {
+  const answers = [buildAnswer(verb, pronoun)];
+
+  if (verb.aux === "être" && pronoun.gender === "both") {
+    const aux = pronoun.auxE;
+    const base = verb.pp;
+
+    if (pronoun.text === "je") {
+      answers.push(`je ${aux} ${base}`);
+      answers.push(`je ${aux} ${base}e`);
+    }
+
+    if (pronoun.text === "tu") {
+      answers.push(`tu ${aux} ${base}`);
+      answers.push(`tu ${aux} ${base}e`);
+    }
+
+    if (pronoun.text === "nous") {
+      answers.push(`nous ${aux} ${base}s`);
+      answers.push(`nous ${aux} ${base}es`);
+    }
+
+    if (pronoun.text === "vous") {
+      answers.push(`vous ${aux} ${base}`);
+      answers.push(`vous ${aux} ${base}e`);
+      answers.push(`vous ${aux} ${base}s`);
+      answers.push(`vous ${aux} ${base}es`);
+    }
+  }
+
+  return answers.map(normalize);
+}
+
+function nextExercise() {
+  if (score >= MAX_SCORE) {
+    showVictory();
+    return;
+  }
+
+  updateLevelBadge();
+
+  currentVerb = pickVerb();
+  document.getElementById("exercise").innerHTML = "";
+  document.getElementById("feedback").textContent = "";
+
+  currentMode = Math.random() < 0.75 ? "full" : "quiz";
+
+  if (currentMode === "full") showFullExercise();
+  else showQuizExercise();
+}
+
+function showFullExercise() {
+  document.getElementById("title").textContent =
+    `✍️ Conjugue « ${currentVerb.infinitive} » en entier`;
+
+  document.getElementById("instruction").innerHTML =
+    `Auxiliaire attendu : <strong>${currentVerb.aux}</strong><br>
+    Tu dois réussir tout le verbe avant de passer au suivant.`;
+
+  let html = `<div class="grid">`;
+
+  pronouns.forEach((p, index) => {
+    html += `
+      <div>
+        <label><strong>${p.text}</strong></label><br>
+        <input id="answer-${index}" placeholder="Exemple : j'ai mangé">
+      </div>
+    `;
+  });
+
+  html += `</div><button onclick="checkFull()">Valider tout</button>`;
+
+  document.getElementById("exercise").innerHTML = html;
+}
+
+function checkFull() {
+  let mistakes = [];
+
+  pronouns.forEach((p, index) => {
+    const user = normalize(document.getElementById(`answer-${index}`).value);
+    const correct = buildAnswer(currentVerb, p);
+    const accepted = acceptedAnswers(currentVerb, p);
+
+    if (!accepted.includes(user)) {
+      mistakes.push(`${p.text} → ${correct}`);
+      classifyError(user, correct, currentVerb, p);
+    }
+  });
+
+  if (mistakes.length === 0) {
+    score += 3;
+    if (score > MAX_SCORE) score = MAX_SCORE;
+
+    document.getElementById("score").textContent = score;
+    document.getElementById("feedback").innerHTML =
+      `<span class="good">🏆 Parfait ! Verbe complet réussi.</span>`;
+
+    setTimeout(nextExercise, 1000);
+  } else {
+    document.getElementById("feedback").innerHTML =
+      `<span class="bad">❌ Il reste des erreurs.</span><br><br>
+      À revoir :<br>${mistakes.join("<br>")}`;
+  }
+}
+
+function showQuizExercise() {
+  currentPronoun = pronouns[Math.floor(Math.random() * pronouns.length)];
+  const correct = buildAnswer(currentVerb, currentPronoun);
+
+  document.getElementById("title").textContent = "🎲 Défi rapide";
+  document.getElementById("instruction").innerHTML =
+    `Choisis la bonne réponse : <strong>${currentPronoun.text} ${currentVerb.infinitive}</strong>`;
+
+  let choices = [
+    correct,
+    `${currentPronoun.text} ${currentPronoun.auxA} ${currentVerb.pp}`,
+    `${currentPronoun.text} ${currentPronoun.auxE} ${currentVerb.pp}`,
+    `${currentPronoun.text} ${currentPronoun.auxA} ${currentVerb.pp}s`
+  ];
+
+  choices = [...new Set(choices.map(normalize))].sort(() => Math.random() - 0.5);
+
+  document.getElementById("exercise").innerHTML = choices.map(c =>
+    `<button onclick="checkQuiz('${c.replaceAll("'", "\\'")}')">${c}</button>`
+  ).join("");
+}
+
+function checkQuiz(choice) {
+  const correct = buildAnswer(currentVerb, currentPronoun);
+  const accepted = acceptedAnswers(currentVerb, currentPronoun);
+
+  if (accepted.includes(normalize(choice))) {
+    score++;
+    document.getElementById("score").textContent = score;
+
+    document.getElementById("feedback").innerHTML =
+      `<span class="good">✅ Bravo !</span>`;
+
+    setTimeout(nextExercise, 900);
+  } else {
+    classifyError(choice, correct, currentVerb, currentPronoun);
+
+    document.getElementById("feedback").innerHTML =
+      `<span class="bad">❌ Pas encore.</span><br>
+      Bonne réponse : ${correct}`;
+  }
+}
+
+function classifyError(user, correct, verb, pronoun) {
+  user = normalize(user);
+  correct = normalize(correct);
+
+  const correctAux = verb.aux === "avoir" ? pronoun.auxA : pronoun.auxE;
+
+  if (!user.includes(correctAux)) {
+    errors.auxiliaire++;
+    return;
+  }
+
+  if (verb.aux === "être") {
+    const correctPP = correct.split(" ").pop();
+    if (!user.endsWith(correctPP)) {
+      errors.accord++;
+      return;
+    }
+  }
+
+  errors.autre++;
+}
+
+function showVictory() {
+  document.getElementById("game").innerHTML = `
+    <h2>🎉 Mission réussie !</h2>
+    <p>Bravo, tu as atteint <strong>${MAX_SCORE} points</strong> !</p>
+
+    <h3>📊 Bilan des erreurs</h3>
+    <p>Erreur d’auxiliaire : <strong>${errors.auxiliaire}</strong></p>
+    <p>Erreur d’accord : <strong>${errors.accord}</strong></p>
+    <p>Autres erreurs : <strong>${errors.autre}</strong></p>
+
+    <div class="rule">
+      <strong>Conseil :</strong><br>
+      ${getAdvice()}
+    </div>
+
+    <button onclick="location.reload()">🔁 Recommencer</button>
+  `;
+}
+
+function getAdvice() {
+  if (errors.auxiliaire > errors.accord && errors.auxiliaire > errors.autre) {
+    return "Travaille surtout le choix entre avoir et être.";
+  }
+
+  if (errors.accord > errors.auxiliaire && errors.accord > errors.autre) {
+    return "Travaille surtout les accords avec l’auxiliaire être : allé, allée, allés, allées.";
+  }
+
+  if (errors.autre > 0) {
+    return "Relis bien les participes passés : pris, vu, fait, dit, mis, venu.";
+  }
+
+  return "Excellent travail ! Tu maîtrises très bien le passé composé.";
+}
+</script>
+
+</body>
+</html>
