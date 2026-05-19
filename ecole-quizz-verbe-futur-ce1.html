@@ -1,0 +1,663 @@
+
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Quiz CE1 – Le futur</title>
+  <style>
+    :root{
+      --bg:#ffe6d2;
+      --card:#ffffff;
+      --ink:#17324d;
+      --muted:#5d7288;
+      --primary:#2f7cff;
+      --primary2:#7c3aed;
+      --good:#16803c;
+      --bad:#d72d2d;
+      --soft:#dbeafe;
+      --shadow:0 10px 30px rgba(0,0,0,.08);
+      --radius:18px;
+    }
+
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+      background:
+        radial-gradient(900px 520px at -10% 0%, #ffd7b5 0%, transparent 70%),
+        radial-gradient(760px 500px at 110% 10%, #ffd2b0 0%, transparent 68%),
+        radial-gradient(680px 420px at 50% 100%, #ffcba3 0%, transparent 72%),
+        linear-gradient(165deg, #ffe9d8 0%, var(--bg) 52%, #ffd9bc 100%);
+      color:var(--ink);
+    }
+
+    .bg-decor{
+      position:fixed;
+      z-index:0;
+      pointer-events:none;
+      opacity:.38;
+    }
+
+    .bg-clock{
+      width:116px;
+      height:116px;
+      border:5px solid rgba(255,255,255,.75);
+      border-radius:50%;
+      background:radial-gradient(circle at 35% 32%, rgba(255,255,255,.95) 0%, rgba(255,255,255,.66) 65%, rgba(255,255,255,.45) 100%);
+      box-shadow:0 8px 22px rgba(170,90,25,.18);
+    }
+    .bg-clock::before,
+    .bg-clock::after{
+      content:"";
+      position:absolute;
+      left:50%;
+      top:50%;
+      transform-origin:bottom center;
+      border-radius:999px;
+      background:rgba(117,70,36,.58);
+    }
+    .bg-clock::before{
+      width:4px;
+      height:34px;
+      transform:translate(-50%, -100%) rotate(24deg);
+    }
+    .bg-clock::after{
+      width:3px;
+      height:42px;
+      transform:translate(-50%, -100%) rotate(-48deg);
+    }
+
+    .bg-rocket{
+      width:56px;
+      height:118px;
+      border-radius:30px 30px 16px 16px;
+      background:linear-gradient(180deg, rgba(255,255,255,.95) 0%, rgba(255,235,220,.92) 42%, rgba(255,172,122,.9) 100%);
+      box-shadow:0 8px 22px rgba(176,84,34,.2);
+    }
+    .bg-rocket::before{
+      content:"";
+      position:absolute;
+      top:-20px;
+      left:50%;
+      transform:translateX(-50%);
+      width:0;
+      height:0;
+      border-left:18px solid transparent;
+      border-right:18px solid transparent;
+      border-bottom:24px solid rgba(255,128,64,.85);
+    }
+    .bg-rocket::after{
+      content:"";
+      position:absolute;
+      left:50%;
+      top:30px;
+      transform:translateX(-50%);
+      width:18px;
+      height:18px;
+      border-radius:50%;
+      background:radial-gradient(circle at 35% 35%, #d9f1ff 0%, #9bd0ff 100%);
+      border:2px solid rgba(255,255,255,.85);
+    }
+
+    .clock-1{top:110px;left:7%;transform:rotate(-14deg)}
+    .clock-2{top:260px;right:10%;transform:rotate(10deg) scale(.9)}
+    .clock-3{bottom:120px;left:12%;transform:rotate(16deg) scale(1.08)}
+    .rocket-1{top:180px;right:21%;transform:rotate(18deg)}
+    .rocket-2{bottom:80px;right:8%;transform:rotate(-12deg) scale(.94)}
+    .rocket-3{bottom:220px;left:4%;transform:rotate(24deg) scale(.86)}
+
+    .back-button {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      background: rgba(255, 255, 255, 0.9);
+      padding: 10px 20px;
+      border-radius: 20px;
+      text-decoration: none;
+      color: var(--primary);
+      font-weight: 800;
+      font-size: 1.1em;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      transition: all 0.2s;
+      z-index: 100;
+      backdrop-filter: blur(5px);
+    }
+    .back-button:hover {
+      transform: scale(1.05);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+    }
+
+    @media(max-width:480px){
+      .bg-decor{opacity:.16}
+      .clock-3,.rocket-2,.rocket-3{display:none}
+
+      .back-button{
+        position:absolute;
+        top:12px;
+        left:12px;
+        font-size:.95em;
+        padding:8px 14px;
+      }
+
+      .wrap{
+        align-items:flex-start;
+        padding:76px 12px 12px;
+      }
+
+      .app{gap:12px}
+      .hero{padding:14px}
+      .mascot{width:42px;height:42px;font-size:22px}
+      h1{font-size:20px}
+      .subtitle{font-size:13px}
+      .pill{font-size:11px;padding:6px 9px}
+      .card{padding:12px}
+      .sectionTitle h2{font-size:16px}
+      .hint{font-size:12px}
+      .group{padding:10px}
+      label.small{min-width:100%;padding:9px 10px}
+      button{font-size:13px;padding:10px 12px}
+      .question{font-size:16px}
+      .textInput{font-size:15px;padding:10px}
+      .miniHelp{font-size:13px}
+    }
+
+    .wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:96px 20px 20px;position:relative;z-index:2}
+    .app{width:min(980px,100%);display:grid;gap:16px}
+
+    .hero{
+      background:linear-gradient(135deg,var(--primary),var(--primary2));
+      color:white;
+      border-radius:var(--radius);
+      padding:18px;
+      box-shadow:var(--shadow);
+    }
+    .heroTop{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+    .title{display:flex;align-items:center;gap:12px}
+    .mascot{width:48px;height:48px;border-radius:15px;background:rgba(255,255,255,.18);display:grid;place-items:center;font-size:26px;border:1px solid rgba(255,255,255,.25)}
+    h1{font-size:24px;margin:0}
+    .subtitle{font-size:14px;opacity:.95;margin-top:3px}
+    .pillRow{display:flex;gap:8px;flex-wrap:wrap}
+    .pill{font-size:12px;padding:7px 10px;border-radius:999px;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.25)}
+
+    .grid{display:grid;grid-template-columns:1.05fr .95fr;gap:16px}
+    @media(max-width:860px){.grid{grid-template-columns:1fr}}
+
+    .card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);padding:16px}
+    .sectionTitle{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:10px}
+    .sectionTitle h2{font-size:17px;margin:0}
+    .hint{font-size:13px;color:var(--muted)}
+
+    .verbBox{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    @media(max-width:560px){.verbBox{grid-template-columns:1fr}}
+    .group{border:1px solid #eef2ff;background:#fbfdff;border-radius:16px;padding:12px}
+    .group h3{margin:0 0 8px;font-size:14px}
+    .chips{display:flex;flex-wrap:wrap;gap:8px}
+    .chip{border:1px solid #cfe3ff;background:var(--soft);border-radius:999px;padding:8px 10px;cursor:pointer;user-select:none;font-size:13px}
+    .chip[data-on="false"]{opacity:.42;filter:grayscale(.2)}
+    .chip em{font-style:normal;color:var(--muted);font-size:12px;margin-left:4px}
+
+    .controls{display:grid;gap:10px;margin-top:12px}
+    .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+    label.small{display:flex;gap:8px;align-items:flex-start;background:#f6fbff;border:1px solid #e4f1ff;padding:10px 12px;border-radius:14px;cursor:pointer;flex:1;min-width:210px}
+    label.small strong{font-size:13px}
+    label.small span{font-size:12px;color:var(--muted)}
+
+    .btnRow{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
+    button{border:none;border-radius:14px;padding:12px 14px;font-size:14px;cursor:pointer;box-shadow:0 8px 18px rgba(47,124,255,.16)}
+    button:disabled{opacity:.55;cursor:not-allowed}
+    .primary{background:linear-gradient(135deg,var(--primary),var(--primary2));color:white}
+    .ghost{background:#f3f7ff;color:var(--ink);box-shadow:none;border:1px solid #e2ecff}
+    .danger{background:#fff1f2;color:#9f1239;box-shadow:none;border:1px solid #ffd7df}
+
+    .progress{height:10px;background:#edf4ff;border-radius:999px;overflow:hidden;border:1px solid #deebff}
+    .bar{height:100%;width:0%;background:linear-gradient(90deg,#22c55e,#2f7cff);transition:width .25s ease}
+    .status{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:10px 0}
+    .badge{display:inline-flex;align-items:center;padding:6px 10px;background:#f6faff;border:1px solid #e4f1ff;border-radius:999px;font-size:12px;color:var(--muted)}
+    .question{font-size:18px;line-height:1.3;margin:8px 0 12px;font-weight:750}
+    .answers{display:grid;gap:10px}
+    .answerBtn{width:100%;text-align:left;background:white;border:1px solid #e7f0ff;box-shadow:none;border-radius:14px;padding:12px;display:flex;justify-content:space-between;gap:10px;align-items:center}
+    .kbd{font-size:12px;background:#f3f4f6;color:var(--muted);border:1px solid #e5e7eb;border-radius:8px;padding:2px 6px}
+    .inputRow{display:flex;gap:10px;flex-wrap:wrap}
+    .textInput{flex:1;min-width:200px;border:1px solid #dbeafe;border-radius:14px;padding:12px;font-size:16px}
+    .miniHelp{background:#f6fbff;border:1px solid #e4f1ff;border-radius:16px;padding:12px;color:var(--ink);font-size:14px}
+    .feedback{min-height:34px;font-weight:800;margin:12px 0 0}
+    .feedback.good{color:var(--good)}
+    .feedback.bad{color:var(--bad)}
+    .inlineBtn{display:block;margin-top:10px;background:#fff;border:1px solid #ffd7df;color:var(--ink);box-shadow:none;font-weight:800}
+    .footerNote{font-size:12px;color:var(--muted);text-align:center;margin:8px 0 0}
+
+    .stars{display:flex;gap:6px;align-items:center}
+    .star{width:18px;height:18px;background:radial-gradient(circle at 30% 30%,#ffe89a,#ffb703);clip-path:polygon(50% 0%,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%);opacity:.25;transform:scale(.92)}
+    .star.on{opacity:1;transform:scale(1)}
+    .confetti{position:fixed;inset:0;pointer-events:none;overflow:hidden}
+    .confetti i{position:absolute;width:10px;height:14px;top:-20px;border-radius:3px;animation:fall 1.2s linear forwards}
+    @keyframes fall{to{transform:translateY(110vh) rotate(320deg);opacity:.95}}
+
+    @media(max-width:860px){
+      .bg-decor{opacity:.24}
+      .clock-2,.rocket-3{display:none}
+    }
+  </style>
+</head>
+<body>
+<a href="ecole-cours.html" class="back-button">⬅️ Retour au menu</a>
+
+<div class="bg-decor bg-clock clock-1"></div>
+<div class="bg-decor bg-clock clock-2"></div>
+<div class="bg-decor bg-clock clock-3"></div>
+<div class="bg-decor bg-rocket rocket-1"></div>
+<div class="bg-decor bg-rocket rocket-2"></div>
+<div class="bg-decor bg-rocket rocket-3"></div>
+
+<div class="wrap">
+  <div class="app">
+    <header class="hero">
+      <div class="heroTop">
+        <div class="title">
+          <div class="mascot">🦊</div>
+          <div>
+            <h1>Le futur – CE1</h1>
+            <div class="subtitle">Quiz, phrase à trou et écriture pour apprendre en jouant.</div>
+          </div>
+        </div>
+        <div class="pillRow">
+          <div class="pill">Terminaisons : <strong>-ai -as -a -ons -ez -ont</strong></div>
+          <div class="pill">⭐ être / avoir</div>
+        </div>
+      </div>
+    </header>
+
+    <div class="grid">
+      <section class="card" id="setup">
+        <div class="sectionTitle">
+          <h2>1) Choisis les verbes</h2>
+          <div class="hint">Clique pour activer/désactiver.</div>
+        </div>
+
+        <div class="verbBox">
+          <div class="group"><h3>⭐ Importants</h3><div class="chips" id="chipsImportant"></div></div>
+          <div class="group"><h3>1er groupe</h3><div class="chips" id="chipsG1"></div></div>
+          <div class="group"><h3>2e groupe</h3><div class="chips" id="chipsG2"></div></div>
+          <div class="group"><h3>3e groupe</h3><div class="chips" id="chipsG3"></div></div>
+        </div>
+
+        <div class="controls">
+          <div class="sectionTitle"><h2>2) Type d’exercice</h2><div class="hint">Mélange conseillé.</div></div>
+          <div class="row">
+            <label class="small"><input type="radio" name="mode" value="mix" checked><div><strong>Mélange 🎲</strong><br><span>QCM + écriture + phrase à trou</span></div></label>
+            <label class="small"><input type="radio" name="mode" value="mcq"><div><strong>QCM</strong><br><span>Choisir la bonne réponse</span></div></label>
+          </div>
+          <div class="row">
+            <label class="small"><input type="radio" name="mode" value="type"><div><strong>Écriture ✍️</strong><br><span>Écrire le verbe</span></div></label>
+            <label class="small"><input type="radio" name="mode" value="gap"><div><strong>Phrase à trou 🕳️</strong><br><span>Compléter la phrase</span></div></label>
+          </div>
+          <div class="row">
+            <label class="small"><input type="checkbox" id="assistPron" checked><div><strong>Aide pronom</strong><br><span>Affiche (je), (tu), (nous)…</span></div></label>
+            <label class="small"><input type="checkbox" id="caseInsensitive" checked><div><strong>Tolérant</strong><br><span>Majuscules / accents simples</span></div></label>
+          </div>
+          <div class="btnRow">
+            <button class="primary" id="btnStart" type="button">🚀 Démarrer</button>
+            <button class="ghost" id="btnDemo" type="button">🎯 Démo être/avoir</button>
+            <button class="danger" id="btnReset" type="button">↺ Réinitialiser</button>
+          </div>
+          <p class="footerNote">Indicateurs du futur : demain, bientôt, plus tard, la semaine prochaine…</p>
+        </div>
+      </section>
+
+      <section class="card" id="play">
+        <div class="sectionTitle">
+          <h2>La partie 🎮</h2>
+          <div class="stars"><div class="star" id="s1"></div><div class="star" id="s2"></div><div class="star" id="s3"></div></div>
+        </div>
+        <div class="progress"><div class="bar" id="bar"></div></div>
+        <div class="status"><span class="badge" id="badgeType">—</span><span class="badge" id="badgeScore">Score : 0</span></div>
+        <p class="question" id="question">Clique sur “Démarrer”. 🙂</p>
+        <div id="exerciseArea"></div>
+        <p class="feedback" id="feedback"></p>
+        <div class="btnRow">
+          <button class="ghost" id="btnSkip" type="button" disabled>Passer ⏭️</button>
+          <button class="ghost" id="btnStop" type="button" disabled>Arrêter</button>
+        </div>
+        <div class="miniHelp" style="margin-top:12px">
+          <strong>Rappel :</strong> être → <em>ser-</em> ; avoir → <em>aur-</em> ; aller → <em>ir-</em> ; faire → <em>fer-</em>.
+        </div>
+      </section>
+    </div>
+  </div>
+</div>
+<div class="confetti" id="confetti"></div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function(){
+  const verbs = {
+    important:[
+      {v:"être", group:"irreg", stem:"ser"},
+      {v:"avoir", group:"irreg", stem:"aur"},
+      {v:"aller", group:"irreg", stem:"ir"},
+      {v:"faire", group:"irreg", stem:"fer"}
+    ],
+    g1:[
+      {v:"parler", group:"reg"},
+      {v:"chanter", group:"reg"},
+      {v:"jouer", group:"reg"},
+      {v:"aimer", group:"reg"},
+      {v:"manger", group:"reg"}
+    ],
+    g2:[
+      {v:"finir", group:"reg"},
+      {v:"grandir", group:"reg"},
+      {v:"choisir", group:"reg"}
+    ],
+    g3:[
+      {v:"venir", group:"irreg", stem:"viendr"},
+      {v:"prendre", group:"irreg", stem:"prendr"},
+      {v:"voir", group:"irreg", stem:"verr"},
+      {v:"lire", group:"irreg", stem:"lir"},
+      {v:"offrir", group:"reg"}
+    ]
+  };
+
+  const endings = ["ai","as","a","ons","ez","ont"];
+  const persons = [
+    {label:"je", idx:0},
+    {label:"tu", idx:1},
+    {label:"il/elle", idx:2},
+    {label:"nous", idx:3},
+    {label:"vous", idx:4},
+    {label:"ils/elles", idx:5}
+  ];
+  const timeWords = ["Demain", "Bientôt", "Plus tard", "La semaine prochaine", "L’année prochaine", "Ce soir"];
+
+  let selected = new Map();
+  let mode = "mix";
+  let assistPron = true;
+  let caseInsensitive = true;
+  let game = {on:false, n:10, i:0, score:0, current:null};
+
+  function complementFor(v){
+    const map = {
+      "être":"à l'école",
+      "lire":"un livre",
+      "aller":"au parc",
+      "faire":"un dessin",
+      "offrir":"un cadeau",
+      "avoir":"faim",
+      "parler":"avec un ami",
+      "chanter":"une chanson",
+      "jouer":"au ballon",
+      "aimer":"les animaux",
+      "manger":"un gâteau",
+      "finir":"ses devoirs",
+      "grandir":"vite",
+      "choisir":"un jeu",
+      "venir":"à la maison",
+      "prendre":"le bus",
+      "voir":"un film"
+    };
+    return map[v] || "quelque chose";
+  }
+
+  function normalize(s){
+    s = String(s || "").trim();
+    if(!caseInsensitive) return s;
+    return s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/’/g,"'");
+  }
+  function randomItem(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+  function allVerbObjects(){ return Object.values(verbs).flat(); }
+  function conjugate(verbObj, personIdx){
+    const end = endings[personIdx];
+    if(verbObj.group === "irreg") return verbObj.stem + end;
+    return verbObj.v + end;
+  }
+  function subjectFor(personIdx, verbObj){
+    if(personIdx !== 0) return persons[personIdx].label.split('/')[0];
+    const form = conjugate(verbObj, 0);
+    return /^[aeiouh]/i.test(form) ? "j'" : "je";
+  }
+  function subjectToken(personIdx, verbObj){
+    const subj = subjectFor(personIdx, verbObj);
+    const cap = subj === "j'" ? "J'" : subj.charAt(0).toUpperCase() + subj.slice(1);
+    return assistPron ? "(" + cap + ")" : cap;
+  }
+  function makeSentence(tw, verbObj, personIdx){
+    return tw + ", " + subjectToken(personIdx, verbObj) + " ______ " + complementFor(verbObj.v) + ".";
+  }
+
+  function setStars(){
+    const ratio = game.score / Math.max(1, game.i);
+    document.getElementById("s1").classList.toggle("on", ratio >= .2);
+    document.getElementById("s2").classList.toggle("on", ratio >= .5);
+    document.getElementById("s3").classList.toggle("on", ratio >= .8);
+  }
+  function boomConfetti(){
+    const c = document.getElementById("confetti");
+    c.innerHTML = "";
+    const colors = ["#22c55e", "#2f7cff", "#f97316", "#eab308", "#ec4899", "#a78bfa"];
+    for(let k=0;k<24;k++){
+      const piece = document.createElement("i");
+      piece.style.left = Math.random()*100 + "vw";
+      piece.style.background = colors[k % colors.length];
+      piece.style.animationDuration = (0.9 + Math.random()*0.8) + "s";
+      c.appendChild(piece);
+    }
+    setTimeout(function(){ c.innerHTML = ""; }, 1400);
+  }
+
+  function chipTemplate(o){
+    const on = selected.get(o.v) ? "true" : "false";
+    const hint = o.v === "être" ? "ser-" : o.v === "avoir" ? "aur-" : o.v === "lire" ? "lir-" : "";
+    return '<div class="chip" role="button" tabindex="0" data-verb="'+o.v+'" data-on="'+on+'">'+o.v+(hint ? ' <em>'+hint+'</em>' : '')+'</div>';
+  }
+  function renderChips(){
+    document.getElementById("chipsImportant").innerHTML = verbs.important.map(chipTemplate).join("");
+    document.getElementById("chipsG1").innerHTML = verbs.g1.map(chipTemplate).join("");
+    document.getElementById("chipsG2").innerHTML = verbs.g2.map(chipTemplate).join("");
+    document.getElementById("chipsG3").innerHTML = verbs.g3.map(chipTemplate).join("");
+    document.querySelectorAll(".chip").forEach(function(el){
+      el.addEventListener("click", function(){
+        selected.set(el.dataset.verb, !selected.get(el.dataset.verb));
+        renderChips();
+      });
+      el.addEventListener("keydown", function(e){
+        if(e.key === "Enter" || e.key === " "){
+          e.preventDefault();
+          selected.set(el.dataset.verb, !selected.get(el.dataset.verb));
+          renderChips();
+        }
+      });
+    });
+  }
+  function resetSelection(){
+    selected.clear();
+    allVerbObjects().forEach(function(o){ selected.set(o.v, false); });
+    ["être","avoir","jouer","manger","finir","lire"].forEach(function(v){ selected.set(v, true); });
+    renderChips();
+  }
+  function buildPool(){
+    const pool = allVerbObjects().filter(function(o){ return selected.get(o.v); });
+    return pool.length ? pool : verbs.important.slice(0,2);
+  }
+  function readSettings(){
+    mode = document.querySelector('input[name="mode"]:checked').value || "mix";
+    assistPron = document.getElementById("assistPron").checked;
+    caseInsensitive = document.getElementById("caseInsensitive").checked;
+  }
+  function pickExerciseType(){
+    if(mode !== "mix") return mode;
+    return randomItem(["mcq","type","gap"]);
+  }
+  function makeOptions(correct, verbObj){
+    // Toujours inclure la bonne réponse + 3 distracteurs fiables
+    const options = [correct];
+
+
+    // mêmes conjugaisons avec autres personnes
+    for(let i=0;i<6;i++){
+      const form = conjugate(verbObj, i);
+      if(form !== correct && !options.includes(form)){
+        options.push(form);
+        if(options.length === 4) break;
+      }
+    }
+
+
+    // compléter si nécessaire avec autres verbes
+    if(options.length < 4){
+      allVerbObjects().forEach(function(v){
+        const form = conjugate(v, Math.floor(Math.random()*6));
+        if(form !== correct && !options.includes(form) && options.length < 4){
+          options.push(form);
+        }
+      });
+    }
+
+
+    // mélange final
+    for(let i=options.length-1;i>0;i--){
+      const j = Math.floor(Math.random()*(i+1));
+      const tmp = options[i]; options[i] = options[j]; options[j] = tmp;
+    }
+
+
+    return options;
+}
+  function nextExercise(){
+    const pool = buildPool();
+    const verbObj = randomItem(pool);
+    const person = randomItem(persons);
+    const answer = conjugate(verbObj, person.idx);
+    const type = pickExerciseType();
+    const tw = randomItem(timeWords);
+    return {
+      type:type,
+      verb:verbObj,
+      person:person,
+      answer:answer,
+      sentence:makeSentence(tw, verbObj, person.idx),
+      options:makeOptions(answer, verbObj)
+    };
+  }
+
+  function updateHUD(){
+    document.getElementById("badgeScore").textContent = "Score : " + game.score;
+    document.getElementById("bar").style.width = Math.round((game.i / game.n) * 100) + "%";
+    setStars();
+  }
+  function renderExercise(ex){
+    document.getElementById("feedback").textContent = "";
+    document.getElementById("feedback").className = "feedback";
+    document.getElementById("badgeType").textContent = "Exercice : " + (ex.type === "mcq" ? "QCM" : ex.type === "type" ? "Écriture" : "Phrase à trou");
+    const q = document.getElementById("question");
+    const area = document.getElementById("exerciseArea");
+    area.innerHTML = "";
+
+    if(ex.type === "mcq"){
+      q.textContent = "🎲 " + ex.sentence + " (verbe : " + ex.verb.v + ")";
+      const box = document.createElement("div");
+      box.className = "answers";
+      ex.options.forEach(function(opt, idx){
+        const b = document.createElement("button");
+        b.className = "answerBtn";
+        b.innerHTML = "<span>"+opt+"</span><span class='kbd'>"+(idx+1)+"</span>";
+        b.addEventListener("click", function(){ validate(opt); });
+        box.appendChild(b);
+      });
+      area.appendChild(box);
+    } else {
+      q.textContent = ex.type === "type" ? "✍️ Écris le verbe au futur (verbe : " + ex.verb.v + ")" : "🕳️ Complète la phrase (verbe : " + ex.verb.v + ")";
+      const help = document.createElement("div");
+      help.className = "miniHelp";
+      help.innerHTML = "<strong>" + ex.sentence + "</strong><br><span class='hint'>Écris seulement le verbe au futur.</span>";
+      const row = document.createElement("div");
+      row.className = "inputRow";
+      row.style.marginTop = "10px";
+      const input = document.createElement("input");
+      input.className = "textInput";
+      input.placeholder = "Ex : serai / aurons / lirai…";
+      const btn = document.createElement("button");
+      btn.className = "primary";
+      btn.type = "button";
+      btn.textContent = "Valider ✅";
+      btn.addEventListener("click", function(){ validate(input.value); });
+      input.addEventListener("keydown", function(e){ if(e.key === "Enter") validate(input.value); });
+      row.appendChild(input);
+      row.appendChild(btn);
+      area.appendChild(help);
+      area.appendChild(row);
+      input.focus();
+    }
+  }
+  function endGame(){
+    game.on = false;
+    document.getElementById("btnSkip").disabled = true;
+    document.getElementById("btnStop").disabled = true;
+    document.getElementById("question").textContent = "🎉 Partie terminée !";
+    document.getElementById("exerciseArea").innerHTML = "<div class='miniHelp'><strong>Score : "+game.score+" / "+game.n+"</strong><br>Bravo pour ton entraînement !</div>";
+    document.getElementById("feedback").textContent = "";
+    boomConfetti();
+  }
+  function goNext(){
+    game.i++;
+    updateHUD();
+    if(game.i >= game.n){ endGame(); return; }
+    game.current = nextExercise();
+    renderExercise(game.current);
+    document.getElementById("btnSkip").disabled = false;
+  }
+  function validate(value){
+    if(!game.on || !game.current) return;
+    const fb = document.getElementById("feedback");
+    document.querySelectorAll("#exerciseArea button,#exerciseArea input").forEach(function(el){ el.disabled = true; });
+    fb.className = "feedback";
+    if(normalize(value) === normalize(game.current.answer)){
+      game.score++;
+      fb.textContent = "✅ Bravo !";
+      fb.classList.add("good");
+      boomConfetti();
+      setTimeout(goNext, 800);
+    } else {
+      fb.classList.add("bad");
+      document.getElementById("btnSkip").disabled = true;
+      fb.innerHTML = "❌ Oups… la bonne réponse était : <strong>"+game.current.answer+"</strong><button class='inlineBtn' id='btnResume' type='button'>Reprendre ▶️</button>";
+      document.getElementById("btnResume").addEventListener("click", goNext);
+    }
+  }
+  function startGame(){
+    readSettings();
+    game = {on:true, n:10, i:0, score:0, current:null};
+    document.getElementById("btnSkip").disabled = false;
+    document.getElementById("btnStop").disabled = false;
+    updateHUD();
+    game.current = nextExercise();
+    renderExercise(game.current);
+  }
+  function demoGame(){
+    selected.clear();
+    allVerbObjects().forEach(function(o){ selected.set(o.v, false); });
+    selected.set("être", true);
+    selected.set("avoir", true);
+    renderChips();
+    startGame();
+  }
+  function stopGame(){
+    game.on = false;
+    document.getElementById("question").textContent = "Partie arrêtée. Tu peux redémarrer quand tu veux 🙂";
+    document.getElementById("exerciseArea").innerHTML = "";
+    document.getElementById("feedback").textContent = "";
+    document.getElementById("btnSkip").disabled = true;
+    document.getElementById("btnStop").disabled = true;
+  }
+
+  document.getElementById("btnStart").addEventListener("click", startGame);
+  document.getElementById("btnDemo").addEventListener("click", demoGame);
+  document.getElementById("btnReset").addEventListener("click", function(){ resetSelection(); stopGame(); });
+  document.getElementById("btnStop").addEventListener("click", stopGame);
+  document.getElementById("btnSkip").addEventListener("click", function(){ if(game.on) goNext(); });
+
+  resetSelection();
+});
+</script>
+</body>
+</html>
