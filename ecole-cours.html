@@ -14,6 +14,8 @@
             --cm2-light: #1dd1a1;
             --cinquieme-color: #5f27cd; /* Violet */
             --cinquieme-light: #a55eea;
+            --allages-color: #2e86de; /* Bleu vif */
+            --allages-light: #74b9ff;
             --text-dark: #2d3436;
         }
 
@@ -198,6 +200,52 @@
             animation: spin 6s linear infinite;
         }
 
+        .all-ages-corner {
+            max-width: 1200px;
+            margin: 0 auto 70px;
+            padding: 10px 20px 40px;
+        }
+
+        .all-ages-header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .all-ages-header h2 {
+            font-family: 'Fredoka', sans-serif;
+            font-size: 2.6em;
+            margin: 0;
+            color: var(--allages-color);
+        }
+
+        .all-ages-header p {
+            margin: 8px 0 0;
+            font-size: 1.2em;
+            font-weight: 700;
+            color: #576574;
+        }
+
+        .all-ages-cards {
+            display: flex;
+            justify-content: center;
+        }
+
+        .card-allages .chapter-header {
+            background: linear-gradient(135deg, var(--allages-light), var(--allages-color));
+        }
+
+        .card-allages .course-link {
+            border: 4px solid var(--allages-color);
+            box-shadow: 0 8px 0 rgba(46, 134, 222, 0.2);
+        }
+
+        .card-allages .course-link:hover {
+            background: var(--allages-color);
+            color: white;
+            transform: translateY(-5px);
+            box-shadow: 0 12px 0 rgba(46, 134, 222, 0.4);
+        }
+
         @keyframes spin {
             100% { transform: rotate(360deg); }
         }
@@ -214,6 +262,8 @@
         @media (max-width: 768px) {
             .hero h1 { font-size: 3em; }
             .chapter-header h2 { font-size: 2.5em; }
+            .all-ages-header h2 { font-size: 2.1em; }
+            .all-ages-header p { font-size: 1.05em; }
         }
     </style>
 </head>
@@ -332,6 +382,23 @@
         </section>
 
     </div>
+
+    <!-- CORNER 7 à 77 ans -->
+    <section class="all-ages-corner">
+        <div class="all-ages-cards">
+            <section class="chapter card-allages">
+                <div class="chapter-header">
+                    <h2>7 à 77 ans</h2>
+                </div>
+                <div class="chapter-content">
+                    <a href="scrabble.html" class="course-link">
+                        <span class="icon">🔤</span>
+                        <span class="text">Scrabble 1 joueur</span>
+                    </a>
+                </div>
+            </section>
+        </div>
+    </section>
 
 </body>
 </html>

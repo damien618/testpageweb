@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Scrabble solo</title>
+  <link rel="stylesheet" href="scrabble.css" />
+</head>
+<body>
+  <a href="ecole-cours.html" class="back-button">⬅️ Retour au menu</a>
+  <main class="app">
+    <header>
+      <div>
+        <h1>Scrabble solo</h1>
+        <p>Plateau 15×15, sac de lettres français, score et règles simplifiées.</p>
+      </div>
+      <div class="badge">⚡ Mode monojoueur • langue française</div>
+    </header>
+
+    <section class="topbar">
+      <article class="panel">
+        <div class="controls-grid">
+          <div class="controls-row">
+            <button id="validateBtn" class="btn-good" type="button">Valider le mot</button>
+            <button id="swapBtn" class="btn-warning" type="button">Échanger lettres</button>
+            <button id="resetBtn" class="btn-secondary" type="button">Recommencer</button>
+          </div>
+          <div class="status-box" id="statusBox">Choisissez une lettre à placer puis validez votre mot. Le premier mot doit passer par la case centrale.</div>
+          <div class="controls-row">
+            <span class="badge">Score : <strong id="scoreValue">0</strong></span>
+            <span class="badge">Lettres restantes : <strong id="remainingValue">102</strong></span>
+            <span class="badge">Tour : <strong id="turnValue">1</strong></span>
+          </div>
+        </div>
+      </article>
+
+      <article class="panel">
+        <div class="legend-grid">
+          <div class="legend-item"><span class="legend-swatch dl">DL</span><span>Lettre x2</span></div>
+          <div class="legend-item"><span class="legend-swatch tl">TL</span><span>Lettre x3</span></div>
+          <div class="legend-item"><span class="legend-swatch dw">DW</span><span>Mot x2</span></div>
+          <div class="legend-item"><span class="legend-swatch tw">TW</span><span>Mot x3</span></div>
+          <div class="legend-item"><span class="legend-swatch star">★</span><span>Case centrale</span></div>
+          <div class="legend-item"><span class="legend-swatch">?</span><span>Joker</span></div>
+        </div>
+      </article>
+    </section>
+
+    <section class="main-grid">
+      <article class="panel board-shell">
+        <div id="board" class="board" aria-label="Plateau de Scrabble"></div>
+      </article>
+
+      <aside class="panel" style="display:grid; gap:14px;">
+        <article class="score-card">
+          <div class="mini-label">Score total</div>
+          <div class="score-value" id="scoreBig">0</div>
+          <div class="mini-label">Bonus 7 lettres : +50 points si vous posez les 7 lettres en un seul coup.</div>
+        </article>
+
+        <article class="info-card">
+          <strong>Règles simplifiées</strong>
+          <ul>
+            <li>Le premier mot doit passer par la case centrale ★.</li>
+            <li>Les mots doivent être reconnus dans une liste française réduite.</li>
+            <li>Les jokers comptent comme n’importe quelle lettre et valent 0 point.</li>
+            <li>Le sac se vide en fin de partie. Le jeu s’arrête quand plus de coups sont possibles.</li>
+          </ul>
+        </article>
+
+        <article class="rack-panel">
+          <strong>Vos lettres</strong>
+          <div id="rack" class="rack" aria-label="Lettres du joueur"></div>
+          <div class="help-line">Glissez une tuile sur le plateau, puis validez votre mot. Si vous souhaitez échanger une lettre, sélectionnez-la puis cliquez sur « Échanger lettres ».</div>
+        </article>
+      </aside>
+    </section>
+  </main>
+
+  <script src="scrabble.js?v=20260614"></script>
+</body>
+</html>
