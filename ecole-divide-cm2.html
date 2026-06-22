@@ -1,0 +1,574 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Leçon interactive de CM2 pour comprendre la divisibilité et s'entraîner à reconnaître les multiples de 2 à 10.">
+  <title>La fabrique des divisions — CM2</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Fredoka:wght@600;700&display=swap');
+
+    :root {
+      --ink: #183153;
+      --muted: #58708f;
+      --paper: #fffdf8;
+      --cream: #fff7df;
+      --navy: #17355c;
+      --blue: #326dee;
+      --blue-soft: #eaf1ff;
+      --yellow: #ffd85c;
+      --orange: #f58855;
+      --green: #169b73;
+      --green-soft: #e1f6ef;
+      --red: #dc5353;
+      --red-soft: #ffebeb;
+      --line: #dce5f1;
+      --shadow: 0 14px 34px rgba(24, 49, 83, .12);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: #f4f8ff;
+      font-family: "Atkinson Hyperlegible", Arial, sans-serif;
+      font-size: 18px;
+      line-height: 1.55;
+    }
+    button, select { font: inherit; }
+    button { touch-action: manipulation; }
+    a { color: var(--blue); }
+    .wrap { width: min(1120px, calc(100% - 32px)); margin: auto; }
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+      padding: 28px 0 72px;
+      color: white;
+      background: var(--navy);
+    }
+    .hero::before, .hero::after {
+      content: "";
+      position: absolute;
+      border-radius: 50%;
+      opacity: .16;
+      background: var(--yellow);
+    }
+    .hero::before { width: 330px; height: 330px; right: -90px; top: -155px; }
+    .hero::after { width: 180px; height: 180px; left: -80px; bottom: -95px; }
+    .nav { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding-left: 190px; }
+    .back-button {
+      position: absolute;
+      z-index: 10;
+      top: 20px;
+      left: 20px;
+      padding: 10px 20px;
+      border-radius: 20px;
+      color: var(--navy);
+      background: rgba(255, 255, 255, .94);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, .14);
+      backdrop-filter: blur(5px);
+      text-decoration: none;
+      font-weight: 700;
+      transition: transform .2s ease, box-shadow .2s ease;
+    }
+    .back-button:hover {
+      transform: scale(1.05);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, .2);
+    }
+    .brand { display: flex; align-items: center; gap: 11px; font-weight: 700; }
+    .brand-mark {
+      display: grid; place-items: center; width: 43px; height: 43px;
+      border-radius: 13px; color: var(--navy); background: var(--yellow);
+      font-family: Fredoka, sans-serif; font-size: 1.25rem; transform: rotate(-4deg);
+    }
+    .nav a {
+      color: white; text-decoration: none; font-size: .94rem; font-weight: 700;
+      border-bottom: 2px solid transparent;
+    }
+    .nav a:hover, .nav a:focus-visible { border-color: var(--yellow); }
+    .hero-grid {
+      position: relative; z-index: 1; display: grid; grid-template-columns: 1.1fr .9fr;
+      align-items: center; gap: 56px; padding-top: 64px;
+    }
+    .eyebrow { margin: 0 0 12px; color: var(--yellow); font-weight: 700; letter-spacing: .08em; text-transform: uppercase; font-size: .85rem; }
+    h1, h2, h3 { font-family: Fredoka, "Arial Rounded MT Bold", sans-serif; line-height: 1.12; }
+    h1 { margin: 0; max-width: 680px; font-size: clamp(2.55rem, 6vw, 5rem); letter-spacing: -.035em; }
+    .hero-lead { max-width: 650px; margin: 22px 0 30px; color: #dce8fa; font-size: 1.17rem; }
+    .cta {
+      display: inline-flex; align-items: center; gap: 9px; padding: 13px 20px;
+      border: 0; border-radius: 12px; color: var(--navy); background: var(--yellow);
+      box-shadow: 0 5px 0 #c69b17; text-decoration: none; font-weight: 700;
+    }
+    .cta:hover { transform: translateY(-2px); }
+    .hero-visual { display: grid; place-items: center; min-height: 320px; }
+    .division-card {
+      position: relative; width: min(100%, 380px); padding: 28px;
+      color: var(--ink); background: var(--paper); border-radius: 26px;
+      box-shadow: 16px 18px 0 rgba(50, 109, 238, .45); transform: rotate(2deg);
+    }
+    .division-card::before {
+      content: "DÉFI DU JOUR"; position: absolute; top: -18px; left: 24px;
+      padding: 7px 13px; border-radius: 8px; background: var(--orange); color: white;
+      font-size: .72rem; font-weight: 700; letter-spacing: .09em; transform: rotate(-4deg);
+    }
+    .big-math { margin: 10px 0 8px; font: 700 clamp(2.3rem, 5vw, 4.2rem)/1 Fredoka, sans-serif; text-align: center; }
+    .math-answer { margin: 0; color: var(--green); text-align: center; font-weight: 700; }
+    .dots { display: flex; justify-content: center; gap: 9px; margin-top: 22px; }
+    .dots i { width: 13px; height: 13px; border-radius: 50%; background: var(--blue); }
+    .dots i:nth-child(2n) { background: var(--yellow); }
+
+    main { padding-bottom: 72px; }
+    .intro-strip { margin-top: -26px; position: relative; z-index: 2; }
+    .definition {
+      display: grid; grid-template-columns: auto 1fr; gap: 18px; align-items: center;
+      padding: 24px 28px; border: 1px solid var(--line); border-radius: 18px;
+      background: white; box-shadow: var(--shadow);
+    }
+    .definition-icon { display: grid; place-items: center; width: 62px; height: 62px; border-radius: 18px; background: var(--blue-soft); font-size: 1.7rem; }
+    .definition p { margin: 0; }
+    section { padding-top: 78px; }
+    .section-head { max-width: 760px; margin-bottom: 30px; }
+    .kicker { margin: 0 0 8px; color: var(--blue); font-size: .82rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
+    h2 { margin: 0 0 12px; font-size: clamp(2rem, 4vw, 3.15rem); letter-spacing: -.02em; }
+    .section-head p { margin: 0; color: var(--muted); }
+
+    .rules { display: grid; grid-template-columns: repeat(3, 1fr); gap: 17px; }
+    .rule {
+      position: relative; min-height: 230px; padding: 24px; overflow: hidden;
+      border: 1px solid var(--line); border-radius: 17px; background: white;
+      box-shadow: 0 7px 18px rgba(24, 49, 83, .07);
+    }
+    .rule-number {
+      display: grid; place-items: center; width: 48px; height: 48px; margin-bottom: 15px;
+      border-radius: 14px; color: white; background: var(--blue);
+      font: 700 1.55rem/1 Fredoka, sans-serif;
+    }
+    .rule:nth-child(3n+2) .rule-number { color: var(--navy); background: var(--yellow); }
+    .rule:nth-child(3n) .rule-number { background: var(--orange); }
+    .rule h3 { margin: 0 0 8px; font-size: 1.2rem; }
+    .rule p { margin: 0; color: var(--muted); font-size: .96rem; }
+    .example { display: block; margin-top: 13px; color: var(--ink); font-weight: 700; }
+    .official-badge {
+      display: inline-block; margin-top: 14px; padding: 4px 8px; border-radius: 999px;
+      color: #176c55; background: var(--green-soft); font-size: .72rem; font-weight: 700;
+    }
+    .extension-badge { color: #7e4d12; background: #fff0cc; }
+    .tip-seven {
+      display: grid; grid-template-columns: auto 1fr; gap: 18px; margin-top: 18px; padding: 20px 24px;
+      border-left: 6px solid var(--orange); border-radius: 12px; background: #fff3ec;
+    }
+    .tip-seven strong { display: block; margin-bottom: 3px; }
+
+    .quiz-shell {
+      display: grid; grid-template-columns: 320px 1fr; overflow: hidden;
+      border: 1px solid #cdd9eb; border-radius: 24px; background: white; box-shadow: var(--shadow);
+    }
+    .quiz-settings { padding: 30px; color: white; background: var(--navy); }
+    .quiz-settings h3 { margin: 0 0 8px; font-size: 1.5rem; }
+    .quiz-settings > p { margin: 0 0 24px; color: #c8daf3; font-size: .94rem; }
+    .quiz-settings label { display: block; margin-bottom: 9px; color: white; font-weight: 700; }
+    select {
+      width: 100%; min-height: 50px; padding: 0 14px; border: 2px solid #7f9bc1;
+      border-radius: 11px; color: var(--ink); background: white;
+    }
+    select:focus-visible, button:focus-visible, a:focus-visible { outline: 4px solid rgba(255, 216, 92, .8); outline-offset: 3px; }
+    .start-btn {
+      width: 100%; min-height: 51px; margin-top: 16px; border: 0; border-radius: 11px;
+      color: var(--navy); background: var(--yellow); font-weight: 700; cursor: pointer;
+      box-shadow: 0 4px 0 #bb941d;
+    }
+    .start-btn:hover { filter: brightness(1.04); transform: translateY(-1px); }
+    .mini-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; margin-top: 26px; }
+    .stat { padding: 13px; border-radius: 11px; background: rgba(255,255,255,.09); text-align: center; }
+    .stat span { display: block; color: #b9cce6; font-size: .73rem; text-transform: uppercase; letter-spacing: .06em; }
+    .stat strong { font: 700 1.5rem Fredoka, sans-serif; }
+    .quiz-panel { min-height: 470px; padding: clamp(30px, 5vw, 58px); display: flex; flex-direction: column; justify-content: center; text-align: center; }
+    .progress-meta { display: flex; justify-content: space-between; gap: 18px; color: var(--muted); font-size: .9rem; }
+    .progress { height: 9px; margin: 10px 0 36px; overflow: hidden; border-radius: 99px; background: #e5ebf4; }
+    .progress > div { width: 0; height: 100%; border-radius: inherit; background: var(--blue); transition: width .3s ease; }
+    .question-label { margin: 0; color: var(--muted); font-weight: 700; }
+    .question { margin: 8px 0 30px; font: 700 clamp(2.3rem, 6vw, 4.2rem)/1.08 Fredoka, sans-serif; }
+    .answers { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; max-width: 520px; width: 100%; margin: auto; }
+    .answer-btn { min-height: 62px; border: 2px solid var(--blue); border-radius: 13px; color: var(--blue); background: white; font-weight: 700; cursor: pointer; }
+    .answer-btn:hover:not(:disabled) { color: white; background: var(--blue); transform: translateY(-2px); }
+    .answer-btn:disabled { cursor: default; opacity: .65; }
+    .answer-btn.correct { border-color: var(--green); color: white; background: var(--green); opacity: 1; }
+    .answer-btn.wrong { border-color: var(--red); color: white; background: var(--red); opacity: 1; }
+    .feedback { min-height: 76px; margin: 22px auto 0; max-width: 610px; }
+    .feedback-box { padding: 13px 16px; border-radius: 11px; background: var(--green-soft); color: #116a51; }
+    .feedback-box.bad { color: #9f3030; background: var(--red-soft); }
+    .next-btn {
+      align-self: center; min-height: 47px; margin-top: 10px; padding: 0 22px; border: 0;
+      border-radius: 10px; color: white; background: var(--blue); font-weight: 700; cursor: pointer;
+    }
+    .result-emoji { margin: 0; font-size: 4rem; }
+    .result-title { margin: 8px 0; font-size: 2.2rem; }
+    .result-text { color: var(--muted); }
+    [hidden] { display: none !important; }
+
+    .method { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; counter-reset: steps; }
+    .method article { padding: 24px; border-radius: 16px; background: var(--cream); }
+    .method article::before {
+      counter-increment: steps; content: counter(steps); display: grid; place-items: center;
+      width: 38px; height: 38px; margin-bottom: 13px; border-radius: 50%; color: white; background: var(--orange); font-weight: 700;
+    }
+    .method h3 { margin: 0 0 7px; }
+    .method p { margin: 0; color: var(--muted); }
+
+    .sources { margin-top: 76px; padding: 28px; border-radius: 16px; background: #eaf1fa; font-size: .9rem; }
+    .sources h2 { font-size: 1.25rem; }
+    .sources p { margin-bottom: 0; color: var(--muted); }
+    footer { padding: 28px 16px; color: #d5e2f3; background: var(--navy); text-align: center; font-size: .85rem; }
+
+    @media (max-width: 850px) {
+      .nav { padding-left: 180px; }
+      .hero-grid, .quiz-shell { grid-template-columns: 1fr; }
+      .hero-grid { gap: 54px; padding-top: 52px; }
+      .hero-visual { min-height: auto; }
+      .rules { grid-template-columns: repeat(2, 1fr); }
+      .quiz-settings { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 18px; align-items: end; }
+      .quiz-settings h3, .quiz-settings > p, .mini-stats { grid-column: 1 / -1; }
+      .start-btn { margin-top: 0; }
+      .mini-stats { margin-top: 4px; }
+    }
+    @media (max-width: 580px) {
+      body { font-size: 16px; }
+      .wrap { width: min(100% - 22px, 1120px); }
+      .nav { padding-top: 54px; padding-left: 0; }
+      .nav > a { display: none; }
+      .back-button { top: 14px; left: 12px; padding: 8px 14px; border-radius: 14px; font-size: .92rem; }
+      .hero { padding-top: 18px; }
+      .hero-grid { padding-top: 45px; }
+      .division-card { box-shadow: 9px 11px 0 rgba(50, 109, 238, .45); }
+      .definition { grid-template-columns: 1fr; padding: 22px; }
+      section { padding-top: 58px; }
+      .rules, .method { grid-template-columns: 1fr; }
+      .rule { min-height: auto; }
+      .quiz-settings { display: block; }
+      .quiz-settings select { margin-bottom: 14px; }
+      .start-btn { margin-top: 0; }
+      .mini-stats { margin-top: 24px; }
+      .quiz-panel { min-height: 440px; padding: 28px 18px; }
+      .answers { gap: 10px; }
+      .answer-btn { min-height: 57px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; transition: none !important; }
+    }
+  </style>
+</head>
+<body>
+  <a href="ecole-cours.html" class="back-button" aria-label="Retour au menu des cours">⬅️ Retour au menu</a>
+  <header class="hero">
+    <div class="wrap">
+      <nav class="nav" aria-label="Navigation principale">
+        <div class="brand"><span class="brand-mark" aria-hidden="true">÷</span> La fabrique des divisions</div>
+        <a href="#regles">Voir les astuces</a>
+      </nav>
+      <div class="hero-grid">
+        <div>
+          <p class="eyebrow">Mathématiques · CM2</p>
+          <h1>Diviser devient un jeu.</h1>
+          <p class="hero-lead">Apprends à repérer en quelques secondes si un nombre est divisible par 2, 3, 4… jusqu’à 10, puis entraîne-toi avec un quiz à ton niveau.</p>
+          <a class="cta" href="#quiz">Lancer le quiz <span aria-hidden="true">→</span></a>
+        </div>
+        <div class="hero-visual" aria-hidden="true">
+          <div class="division-card">
+            <p class="big-math">999 ÷ 9</p>
+            <p class="math-answer">Oui ! 9 + 9 + 9 = 27</p>
+            <div class="dots"><i></i><i></i><i></i><i></i><i></i></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <div class="wrap intro-strip">
+      <div class="definition">
+        <div class="definition-icon" aria-hidden="true">💡</div>
+        <p><strong>Être divisible, ça veut dire quoi ?</strong><br>Un nombre est divisible par un autre si la division tombe juste, avec un <strong>reste égal à 0</strong>. Par exemple, 24 est divisible par 6 car 24 ÷ 6 = 4.</p>
+      </div>
+    </div>
+
+    <section class="wrap" id="regles">
+      <div class="section-head">
+        <p class="kicker">La boîte à astuces</p>
+        <h2>Les critères de divisibilité</h2>
+        <p>Pas besoin de poser toute la division : observe les derniers chiffres ou additionne-les. Chaque carte te donne le raccourci à retenir.</p>
+      </div>
+
+      <div class="rules">
+        <article class="rule">
+          <div class="rule-number">2</div><h3>Regarde le dernier chiffre</h3>
+          <p>Il doit être <strong>0, 2, 4, 6 ou 8</strong>. Ce sont les chiffres pairs.</p>
+          <span class="example">274 → finit par 4 → oui</span><span class="official-badge">Attendu CM2</span>
+        </article>
+        <article class="rule">
+          <div class="rule-number">3</div><h3>Additionne les chiffres</h3>
+          <p>La somme doit être divisible par 3.</p>
+          <span class="example">274 → 2 + 7 + 4 = 13 → non</span><span class="official-badge">Attendu CM2</span>
+        </article>
+        <article class="rule">
+          <div class="rule-number">4</div><h3>Observe les 2 derniers chiffres</h3>
+          <p>Le nombre formé par ces deux chiffres doit être divisible par 4.</p>
+          <span class="example">1 316 → 16 ÷ 4 = 4 → oui</span><span class="official-badge extension-badge">Pour aller plus loin</span>
+        </article>
+        <article class="rule">
+          <div class="rule-number">5</div><h3>Regarde le dernier chiffre</h3>
+          <p>Il doit être <strong>0 ou 5</strong>.</p>
+          <span class="example">735 → finit par 5 → oui</span><span class="official-badge">Attendu CM2</span>
+        </article>
+        <article class="rule">
+          <div class="rule-number">6</div><h3>Combine les règles de 2 et 3</h3>
+          <p>Le nombre doit être à la fois divisible par 2 <strong>et</strong> par 3.</p>
+          <span class="example">342 → pair et 3 + 4 + 2 = 9 → oui</span><span class="official-badge extension-badge">Pour aller plus loin</span>
+        </article>
+        <article class="rule">
+          <div class="rule-number">7</div><h3>Soustrais le double</h3>
+          <p>Enlève le dernier chiffre, double-le, puis soustrais-le au nombre restant. Recommence si besoin.</p>
+          <span class="example">203 → 20 − (2 × 3) = 14 → oui</span><span class="official-badge extension-badge">Défi expert</span>
+        </article>
+        <article class="rule">
+          <div class="rule-number">8</div><h3>Observe les 3 derniers chiffres</h3>
+          <p>Le nombre formé par eux doit être divisible par 8.</p>
+          <span class="example">4 136 → 136 ÷ 8 = 17 → oui</span><span class="official-badge extension-badge">Pour aller plus loin</span>
+        </article>
+        <article class="rule">
+          <div class="rule-number">9</div><h3>Additionne les chiffres</h3>
+          <p>La somme doit être divisible par 9.</p>
+          <span class="example">999 → 9 + 9 + 9 = 27 → oui</span><span class="official-badge">Attendu CM2</span>
+        </article>
+        <article class="rule">
+          <div class="rule-number">10</div><h3>Repère le zéro final</h3>
+          <p>Le dernier chiffre doit être <strong>0</strong>.</p>
+          <span class="example">2 340 → finit par 0 → oui</span><span class="official-badge">Attendu CM2</span>
+        </article>
+      </div>
+
+      <aside class="tip-seven">
+        <span aria-hidden="true">🦔</span>
+        <div><strong>Pourquoi le critère de 7 paraît-il plus difficile ?</strong>Il demande un petit calcul. Pour vérifier 1 253 : 125 − 2 × 3 = 119, puis 11 − 2 × 9 = −7. Comme −7 est un multiple de 7, 1 253 aussi.</div>
+      </aside>
+    </section>
+
+    <section class="wrap" id="quiz">
+      <div class="section-head">
+        <p class="kicker">À toi de jouer</p>
+        <h2>Le quiz des multiples</h2>
+        <p>Choisis la division à réviser. Tu auras 10 questions avec des nombres de 2 à 4 chiffres.</p>
+      </div>
+
+      <div class="quiz-shell">
+        <aside class="quiz-settings">
+          <h3>Ton entraînement</h3>
+          <p>Tu peux changer de série quand tu veux.</p>
+          <div>
+            <label for="divisor">Je révise la division par…</label>
+            <select id="divisor">
+              <option value="2">2</option><option value="3">3</option><option value="4">4</option>
+              <option value="5">5</option><option value="6">6</option><option value="7">7</option>
+              <option value="8">8</option><option value="9" selected>9</option><option value="10">10</option>
+            </select>
+          </div>
+          <button class="start-btn" id="start" type="button">Nouvelle série</button>
+          <div class="mini-stats" aria-live="polite">
+            <div class="stat"><span>Score</span><strong id="score">0</strong></div>
+            <div class="stat"><span>Série</span><strong id="streak">0</strong></div>
+          </div>
+        </aside>
+
+        <div class="quiz-panel" id="quizPanel">
+          <div id="gameView">
+            <div class="progress-meta"><span id="counter">Question 1 sur 10</span><span id="chosenRule">Division par 9</span></div>
+            <div class="progress" aria-hidden="true"><div id="progressBar"></div></div>
+            <p class="question-label">Ce nombre est-il divisible par <strong id="inlineDivisor">9</strong> ?</p>
+            <p class="question" id="question">999</p>
+            <div class="answers">
+              <button class="answer-btn" type="button" data-answer="yes">Oui</button>
+              <button class="answer-btn" type="button" data-answer="no">Non</button>
+            </div>
+            <div class="feedback" id="feedback" aria-live="polite"></div>
+            <button class="next-btn" id="next" type="button" hidden>Question suivante →</button>
+          </div>
+          <div id="resultView" hidden>
+            <p class="result-emoji" id="resultEmoji" aria-hidden="true">🏆</p>
+            <h3 class="result-title">Série terminée !</h3>
+            <p class="result-text" id="resultText"></p>
+            <button class="next-btn" id="replay" type="button">Rejouer</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="wrap">
+      <div class="section-head">
+        <p class="kicker">En cas de doute</p>
+        <h2>La méthode qui marche toujours</h2>
+      </div>
+      <div class="method">
+        <article><h3>Pose la division</h3><p>Divise le nombre par le diviseur choisi.</p></article>
+        <article><h3>Observe le reste</h3><p>Si le reste vaut 0, la division tombe juste.</p></article>
+        <article><h3>Écris ta conclusion</h3><p>« 274 n’est pas divisible par 3 car 274 = 3 × 91 + 1. »</p></article>
+      </div>
+    </section>
+
+    <aside class="wrap sources">
+      <h2>Repères pédagogiques officiels</h2>
+      <p>Cette activité s’appuie sur les attendus de calcul du cycle 3 : connaître les critères de divisibilité par 2, 3, 5, 9 et 10, utiliser la division euclidienne et vérifier un résultat. Les critères de 4, 6, 7 et 8 sont proposés ici en prolongement. Sources : <a href="https://eduscol.education.gouv.fr/sites/default/files/document/2024evaluationdebutcm2mathematiquesficheinterventionmemoriserfaitsproceduresnumeriquesv2pdf-107934.pdf" target="_blank" rel="noopener">fiche d’intervention CM2 – Éduscol</a> et <a href="https://www.education.gouv.fr/bo/15/Special11/MENE1526483Aannexe2.htm" target="_blank" rel="noopener">programme officiel du cycle 3</a>.</p>
+    </aside>
+  </main>
+
+  <footer>Conçu pour apprendre, essayer, se tromper et recommencer — niveau CM2.</footer>
+
+  <script>
+    (() => {
+      const TOTAL = 10;
+      const divisorSelect = document.getElementById('divisor');
+      const startButton = document.getElementById('start');
+      const nextButton = document.getElementById('next');
+      const replayButton = document.getElementById('replay');
+      const answerButtons = [...document.querySelectorAll('.answer-btn')];
+      const questionEl = document.getElementById('question');
+      const inlineDivisor = document.getElementById('inlineDivisor');
+      const chosenRule = document.getElementById('chosenRule');
+      const counter = document.getElementById('counter');
+      const progressBar = document.getElementById('progressBar');
+      const feedback = document.getElementById('feedback');
+      const scoreEl = document.getElementById('score');
+      const streakEl = document.getElementById('streak');
+      const gameView = document.getElementById('gameView');
+      const resultView = document.getElementById('resultView');
+      const resultText = document.getElementById('resultText');
+      const resultEmoji = document.getElementById('resultEmoji');
+
+      let divisor = 9;
+      let questionNumber = 0;
+      let score = 0;
+      let streak = 0;
+      let currentNumber = 999;
+      let currentAnswer = true;
+      let answered = false;
+      let wantedDivisible = true;
+
+      const format = number => new Intl.NumberFormat('fr-FR').format(number);
+
+      function randomInt(min, max) {
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+      }
+
+      function makeNumber(mustBeDivisible) {
+        const digits = randomInt(2, 4);
+        const min = digits === 2 ? 10 : digits === 3 ? 100 : 1000;
+        const max = digits === 2 ? 99 : digits === 3 ? 999 : 9999;
+
+        if (mustBeDivisible) {
+          const minFactor = Math.ceil(min / divisor);
+          const maxFactor = Math.floor(max / divisor);
+          return randomInt(minFactor, maxFactor) * divisor;
+        }
+
+        let candidate;
+        do { candidate = randomInt(min, max); } while (candidate % divisor === 0);
+        return candidate;
+      }
+
+      function newQuestion() {
+        answered = false;
+        wantedDivisible = questionNumber % 2 === 0 ? Math.random() > .35 : Math.random() > .65;
+        currentNumber = makeNumber(wantedDivisible);
+        currentAnswer = currentNumber % divisor === 0;
+
+        questionEl.textContent = format(currentNumber);
+        inlineDivisor.textContent = divisor;
+        chosenRule.textContent = `Division par ${divisor}`;
+        counter.textContent = `Question ${questionNumber + 1} sur ${TOTAL}`;
+        progressBar.style.width = `${(questionNumber / TOTAL) * 100}%`;
+        feedback.innerHTML = '';
+        nextButton.hidden = true;
+        answerButtons.forEach(button => {
+          button.disabled = false;
+          button.classList.remove('correct', 'wrong');
+        });
+      }
+
+      function explanation() {
+        const quotient = Math.floor(currentNumber / divisor);
+        const remainder = currentNumber % divisor;
+        if (remainder === 0) {
+          return `${format(currentNumber)} = ${divisor} × ${format(quotient)} : le reste est 0.`;
+        }
+        return `${format(currentNumber)} = ${divisor} × ${format(quotient)} + ${remainder} : le reste est ${remainder}.`;
+      }
+
+      function answer(choice, clickedButton) {
+        if (answered) return;
+        answered = true;
+        const isCorrect = (choice === 'yes') === currentAnswer;
+
+        answerButtons.forEach(button => {
+          button.disabled = true;
+          const representsTruth = (button.dataset.answer === 'yes') === currentAnswer;
+          if (representsTruth) button.classList.add('correct');
+        });
+
+        if (isCorrect) {
+          score += 1;
+          streak += 1;
+          feedback.innerHTML = `<div class="feedback-box"><strong>Bravo !</strong> ${explanation()}</div>`;
+        } else {
+          streak = 0;
+          clickedButton.classList.add('wrong');
+          feedback.innerHTML = `<div class="feedback-box bad"><strong>Presque !</strong> ${explanation()}</div>`;
+        }
+
+        scoreEl.textContent = score;
+        streakEl.textContent = streak;
+        nextButton.textContent = questionNumber === TOTAL - 1 ? 'Voir mon résultat →' : 'Question suivante →';
+        nextButton.hidden = false;
+        nextButton.focus();
+      }
+
+      function finish() {
+        progressBar.style.width = '100%';
+        gameView.hidden = true;
+        resultView.hidden = false;
+        const message = score >= 9
+          ? 'Excellent, tu maîtrises vraiment ces multiples !'
+          : score >= 7
+            ? 'Très bien ! Encore une série et les critères seront automatiques.'
+            : score >= 5
+              ? 'Bon début. Relis la carte de ta division, puis retente ta chance.'
+              : 'Continue : chaque erreur aide ton cerveau à apprendre.';
+        resultEmoji.textContent = score >= 8 ? '🏆' : score >= 5 ? '🌟' : '💪';
+        resultText.innerHTML = `Tu as obtenu <strong>${score} bonne${score > 1 ? 's' : ''} réponse${score > 1 ? 's' : ''} sur ${TOTAL}</strong>.<br>${message}`;
+        replayButton.focus();
+      }
+
+      function startGame() {
+        divisor = Number(divisorSelect.value);
+        questionNumber = 0;
+        score = 0;
+        streak = 0;
+        scoreEl.textContent = '0';
+        streakEl.textContent = '0';
+        resultView.hidden = true;
+        gameView.hidden = false;
+        newQuestion();
+      }
+
+      answerButtons.forEach(button => button.addEventListener('click', () => answer(button.dataset.answer, button)));
+      nextButton.addEventListener('click', () => {
+        questionNumber += 1;
+        if (questionNumber >= TOTAL) finish(); else newQuestion();
+      });
+      startButton.addEventListener('click', startGame);
+      replayButton.addEventListener('click', startGame);
+
+      startGame();
+    })();
+  </script>
+</body>
+</html>
