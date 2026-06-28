@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chiflet - Jeu de lettres</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bungee&family=Nunito:wght@500;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="chiflet.css">
+</head>
+<body>
+  <a href="ecole-cours.html" class="back-button" aria-label="Retour au menu des cours">⬅️ Retour au menu</a>
+  <main class="app">
+    <header class="hero">
+      <h1>CHIFLET : Les lettres</h1>
+      <p>Trouve le mot le plus long possible avec les 9 lettres. 1 point par lettre. 10 pioches par partie.</p>
+      <div class="hero-stats" aria-label="Score et progression de partie">
+        <p class="stat-chip">Score: <span id="scoreValue">0</span></p>
+        <p class="stat-chip">Pioche: <span id="drawValue">1</span>/10</p>
+        <p id="gameOverBadge" class="game-over-badge" hidden><strong>Partie terminée</strong></p>
+      </div>
+    </header>
+
+    <section class="panel" aria-labelledby="drawTitle">
+      <h2 id="drawTitle">Pioche (9 lettres)</h2>
+      <div id="drawZone" class="tile-zone" aria-label="Lettres disponibles"></div>
+    </section>
+
+    <section class="panel" aria-labelledby="wordTitle">
+      <h2 id="wordTitle">Mot en cours</h2>
+      <div id="wordZone" class="tile-zone target" aria-label="Zone de composition du mot"></div>
+      <p id="currentWord" class="word-preview">Mot: -</p>
+    </section>
+
+    <section class="panel actions" aria-label="Actions de jeu">
+      <button id="okBtn" class="action primary" type="button">OK</button>
+      <button id="resetWordBtn" class="action" type="button">Reinitialiser mot</button>
+      <button id="newDrawBtn" class="action warning" type="button">Nouvelle pioche</button>
+    </section>
+
+    <section class="panel status-panel" aria-live="polite">
+      <p id="statusText" class="status neutral">Nouvelle partie: compose ton mot.</p>
+      <p id="helperText" class="hint">Clique une lettre pour la deplacer. Clique-la dans le mot pour la remettre.</p>
+    </section>
+  </main>
+
+  <div id="longerWordModal" class="modal-backdrop" hidden aria-live="assertive">
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="longerWordTitle">
+      <h2 id="longerWordTitle">Information IA</h2>
+      <p id="longerWordText">Un mot plus long etait : XXXXX</p>
+      <button id="continueBtn" class="action primary" type="button">Poursuivre</button>
+    </div>
+  </div>
+
+  <script src="chiflet.js"></script>
+</body>
+</html>
