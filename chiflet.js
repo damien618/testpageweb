@@ -3,7 +3,6 @@ const MIN_WORD_LENGTH = 2;
 const DRAWS_PER_GAME = 10;
 const API_TIMEOUT_MS = 3500;
 const API_MAX_ATTEMPTS = 2;
-const MAX_EXTENSION_CHECKS = 24;
 const WORD_CACHE_STORAGE_KEY = 'chifletWordCacheV1';
 const WORD_AUDIO_LANG = 'fr-FR';
 
@@ -133,15 +132,6 @@ function findLongerWordFromDraw(playerWord) {
   return bestWord;
 }
 
-function buildInsertionCandidates(baseWord, letter) {
-  const candidates = new Set();
-  for (let i = 0; i <= baseWord.length; i += 1) {
-    const candidate = `${baseWord.slice(0, i)}${letter}${baseWord.slice(i)}`;
-    candidates.add(candidate);
-  }
-  return [...candidates];
-}
-
 async function findLongerWordByApiExtension(playerWord) {
   const letters = [
     ...gameState.drawLetters.map(item => item.letter),
@@ -182,22 +172,32 @@ async function findLongerWordByApiExtension(playerWord) {
   return '';
 }
 
+let modalReturnFocus = null;
+
 function openLongerWordPopup(word, nextStep) {
   dom.longerWordText.textContent = `Un mot plus long était : ${word}`;
+  modalReturnFocus = document.activeElement;
   gameState.isPopupOpen = true;
   gameState.pendingNextStep = nextStep;
   dom.longerWordModal.hidden = false;
   render();
+  dom.continueBtn.focus();
 }
 
 function closeLongerWordPopup() {
   if (!gameState.isPopupOpen) return;
 
   const nextStep = gameState.pendingNextStep;
+  const returnFocus = modalReturnFocus;
   gameState.isPopupOpen = false;
   gameState.pendingNextStep = null;
+  modalReturnFocus = null;
   dom.longerWordModal.hidden = true;
   render();
+
+  if (returnFocus && typeof returnFocus.focus === 'function') {
+    returnFocus.focus();
+  }
 
   if (nextStep === 'endGame') {
     endGame();
@@ -242,9 +242,6 @@ function createLetterTile(letter) {
   };
 }
 
-//function generateDrawLetters() {
-//  return Array.from({ length: MAX_LETTERS }, () => createLetterTile(randomLetter()));
-//}
 function generateDrawLetters() {
   const letters = [];
 
@@ -313,8 +310,7 @@ function moveLetterBackToDraw(letterId) {
   const index = gameState.wordLetters.findIndex(item => item.id === letterId);
   if (index < 0) return;
   const [picked] = gameState.wordLetters.splice(index, 1);
-  //gameState.drawLetters.push(picked);
-  gameState.drawLetters.unshift(picked);  
+  gameState.drawLetters.unshift(picked);
   render();
 }
 
@@ -531,6 +527,21 @@ function onDropToDraw(event) {
   if (data.source === 'word') moveLetterBackToDraw(data.id);
 }
 
+function onModalKeydown(event) {
+  if (!gameState.isPopupOpen) return;
+
+  if (event.key === 'Escape') {
+    event.preventDefault();
+    closeLongerWordPopup();
+    return;
+  }
+
+  if (event.key !== 'Tab') return;
+
+  event.preventDefault();
+  dom.continueBtn.focus();
+}
+
 function initGame() {
   dom.drawZone.addEventListener('click', onTileClick);
   dom.wordZone.addEventListener('click', onTileClick);
@@ -547,6 +558,7 @@ function initGame() {
   dom.resetWordBtn.addEventListener('click', resetCurrentWord);
   dom.newDrawBtn.addEventListener('click', newDraw);
   dom.continueBtn.addEventListener('click', closeLongerWordPopup);
+  document.addEventListener('keydown', onModalKeydown);
 
   newDraw();
 }
