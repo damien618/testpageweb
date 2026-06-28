@@ -143,41 +143,43 @@ function buildInsertionCandidates(baseWord, letter) {
 }
 
 async function findLongerWordByApiExtension(playerWord) {
-  const counts = getLetterCounts([
+  const letters = [
     ...gameState.drawLetters.map(item => item.letter),
     ...gameState.wordLetters.map(item => item.letter),
-  ]);
+  ].join('').toLowerCase();
 
-  let bestWord = '';
-  const checked = new Set();
-  const remainingLetters = [...new Set(gameState.drawLetters.map(item => item.letter))];
-  let checks = 0;
+  if (!letters) return '';
 
-  for (const letter of remainingLetters) {
-    const candidates = buildInsertionCandidates(playerWord, letter);
-    for (const candidate of candidates) {
-      if (checks >= MAX_EXTENSION_CHECKS) return bestWord;
-      if (checked.has(candidate)) continue;
-      checked.add(candidate);
-      if (!canBuildWordFromLetters(candidate, counts)) continue;
+  const query = new URLSearchParams({ letters });
+  const url = `https://api.poocoo.fr/api/v1/words-from-letters?${query.toString()}`;
 
-      // Try API validation on +1 letter candidates to catch real words missing from local fallback dictionary.
-      checks += 1;
-      const exists = await checkPoocooWord(candidate.toLowerCase());
-      if (!exists) continue;
+  for (let attempt = 1; attempt <= API_MAX_ATTEMPTS; attempt += 1) {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), API_TIMEOUT_MS);
 
-      if (candidate.length > bestWord.length) {
-        bestWord = candidate;
-        continue;
+    try {
+      const response = await fetch(url, { mode: 'cors', signal: controller.signal });
+      if (!response.ok) continue;
+
+      const data = await response.json();
+      const wordGroups = data?.data?.wordGroups;
+      if (!Array.isArray(wordGroups)) continue;
+
+      for (const group of wordGroups) {
+        if (!group || group.length <= playerWord.length) continue;
+        if (!Array.isArray(group.words) || group.words.length === 0) continue;
+        return String(group.words[0] || '').toUpperCase();
       }
 
-      if (candidate.length === bestWord.length && candidate < bestWord) {
-        bestWord = candidate;
-      }
+      return '';
+    } catch (error) {
+      // Retry on network/timeout errors.
+    } finally {
+      clearTimeout(timeoutId);
     }
   }
 
-  return bestWord;
+  return '';
 }
 
 function openLongerWordPopup(word, nextStep) {
@@ -408,14 +410,56 @@ async function checkPoocooWord(word) {
   return fallback;
 }
 
+function getProposedWordFromSelection() {
+  return gameState.wordLetters.map(item => item.letter).join('');
+}
+
+function ensureMinimumWordLength(proposedWord) {
+  if (proposedWord.length >= MIN_WORD_LENGTH) return true;
+  setStatus(`Le mot doit contenir au moins ${MIN_WORD_LENGTH} lettres.`, 'bad');
+  return false;
+}
+
+async function handleValidatedWord(proposedWord) {
+  if (gameState.hasScoredCurrentDraw) {
+    speakWord(proposedWord);
+    setStatus(`Mot valide: ${proposedWord}. Score deja compte pour cette pioche.`, 'neutral');
+    return;
+  }
+
+  const points = proposedWord.length;
+  gameState.score += points;
+  gameState.hasScoredCurrentDraw = true;
+  speakWord(proposedWord);
+
+  const longerWordFromLocal = findLongerWordFromDraw(proposedWord.toUpperCase());
+  const longerWordFromApi = await findLongerWordByApiExtension(proposedWord.toUpperCase());
+  const longerWord = longerWordFromApi.length > longerWordFromLocal.length
+    ? longerWordFromApi
+    : longerWordFromLocal;
+  const nextStep = gameState.drawNumber >= DRAWS_PER_GAME ? 'endGame' : 'newDraw';
+
+  if (longerWord) {
+    setStatus(`Mot valide: ${proposedWord} (+${points} points).`, 'good');
+    openLongerWordPopup(longerWord, nextStep);
+    return;
+  }
+
+  if (nextStep === 'endGame') {
+    setStatus(`Mot valide: ${proposedWord} (+${points} points).`, 'good');
+    endGame();
+    return;
+  }
+
+  setStatus(`Mot valide: ${proposedWord} (+${points} points). Nouvelle pioche automatique.`, 'good');
+  newDraw();
+}
+
 async function validateCurrentWord() {
   if (gameState.isChecking || gameState.isGameOver || gameState.isPopupOpen) return;
 
-  const proposedWord = gameState.wordLetters.map(item => item.letter).join('');
-  if (proposedWord.length < MIN_WORD_LENGTH) {
-    setStatus(`Le mot doit contenir au moins ${MIN_WORD_LENGTH} lettres.`, 'bad');
-    return;
-  }
+  const proposedWord = getProposedWordFromSelection();
+  if (!ensureMinimumWordLength(proposedWord)) return;
 
   gameState.isChecking = true;
   setStatus('Verification du mot via le dictionnaire francais...', 'neutral');
@@ -424,42 +468,12 @@ async function validateCurrentWord() {
   try {
     const exists = await checkPoocooWord(proposedWord.toLowerCase());
 
-    if (exists) {
-      if (!gameState.hasScoredCurrentDraw) {
-        const points = proposedWord.length;
-        gameState.score += points;
-        gameState.hasScoredCurrentDraw = true;
-        speakWord(proposedWord);
-
-        const longerWordFromLocal = findLongerWordFromDraw(proposedWord.toUpperCase());
-        const longerWordFromApi = await findLongerWordByApiExtension(proposedWord.toUpperCase());
-        const longerWord = longerWordFromApi.length > longerWordFromLocal.length
-          ? longerWordFromApi
-          : longerWordFromLocal;
-        const nextStep = gameState.drawNumber >= DRAWS_PER_GAME ? 'endGame' : 'newDraw';
-
-        if (longerWord) {
-          setStatus(`Mot valide: ${proposedWord} (+${points} points).`, 'good');
-          openLongerWordPopup(longerWord, nextStep);
-          return;
-        }
-
-        if (nextStep === 'endGame') {
-          setStatus(`Mot valide: ${proposedWord} (+${points} points).`, 'good');
-          endGame();
-          return;
-        }
-
-        setStatus(`Mot valide: ${proposedWord} (+${points} points). Nouvelle pioche automatique.`, 'good');
-        newDraw();
-        return;
-      }
-
-      speakWord(proposedWord);
-      setStatus(`Mot valide: ${proposedWord}. Score deja compte pour cette pioche.`, 'neutral');
-    } else {
+    if (!exists) {
       setStatus(`Mot non reconnu: ${proposedWord}`, 'bad');
+      return;
     }
+
+    await handleValidatedWord(proposedWord);
   } catch (error) {
     setStatus('Verification interrompue. Reessaye avec le bouton OK.', 'bad');
   } finally {
