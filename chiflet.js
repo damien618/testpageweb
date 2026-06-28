@@ -294,8 +294,8 @@ function render() {
   dom.okBtn.hidden = gameState.isGameOver;
   dom.resetWordBtn.hidden = gameState.isGameOver;
   dom.okBtn.disabled = gameState.isChecking || gameState.isGameOver || gameState.isPopupOpen;
-  dom.resetWordBtn.disabled = gameState.isPopupOpen;
-  dom.newDrawBtn.disabled = gameState.isPopupOpen;
+  dom.resetWordBtn.disabled = gameState.isChecking || gameState.isPopupOpen;
+  dom.newDrawBtn.disabled = gameState.isChecking || gameState.isPopupOpen;
 }
 
 function moveLetterToWord(letterId) {
@@ -315,7 +315,7 @@ function moveLetterBackToDraw(letterId) {
 }
 
 function resetCurrentWord() {
-  if (gameState.isGameOver || gameState.isPopupOpen) return;
+  if (gameState.isChecking || gameState.isGameOver || gameState.isPopupOpen) return;
   if (gameState.wordLetters.length === 0) return;
   gameState.drawLetters.push(...gameState.wordLetters);
   gameState.wordLetters = [];
@@ -479,7 +479,7 @@ async function validateCurrentWord() {
 }
 
 function onTileClick(event) {
-  if (gameState.isPopupOpen) return;
+  if (gameState.isChecking || gameState.isPopupOpen) return;
 
   const tile = event.target.closest('.letter-tile');
   if (!tile) return;
@@ -493,7 +493,7 @@ function onTileClick(event) {
 }
 
 function onDragStart(event) {
-  if (gameState.isPopupOpen) return;
+  if (gameState.isChecking || gameState.isPopupOpen) return;
 
   const tile = event.target.closest('.letter-tile');
   if (!tile) return;
@@ -506,7 +506,7 @@ function onDragStart(event) {
 }
 
 function onDropToWord(event) {
-  if (gameState.isPopupOpen) return;
+  if (gameState.isChecking || gameState.isPopupOpen) return;
 
   event.preventDefault();
   const payload = event.dataTransfer.getData('text/plain');
@@ -517,7 +517,7 @@ function onDropToWord(event) {
 }
 
 function onDropToDraw(event) {
-  if (gameState.isPopupOpen) return;
+  if (gameState.isChecking || gameState.isPopupOpen) return;
 
   event.preventDefault();
   const payload = event.dataTransfer.getData('text/plain');
@@ -556,7 +556,10 @@ function initGame() {
 
   dom.okBtn.addEventListener('click', validateCurrentWord);
   dom.resetWordBtn.addEventListener('click', resetCurrentWord);
-  dom.newDrawBtn.addEventListener('click', newDraw);
+  dom.newDrawBtn.addEventListener('click', () => {
+    if (gameState.isChecking) return;
+    newDraw();
+  });
   dom.continueBtn.addEventListener('click', closeLongerWordPopup);
   document.addEventListener('keydown', onModalKeydown);
 
